@@ -3,7 +3,7 @@ const bcrypt = require("bcrypt");
 const jwt= require("jsonwebtoken")
 exports.Signup = async (req, res) => {
     
-        const { Firstname, Lastname, Email, Password , ConfirmPassword} = req.body;
+        const { Firstname, Lastname, Email, Password } = req.body;
 
         const UserExist = await User.findOne({Email})
         if (UserExist){
@@ -15,12 +15,12 @@ exports.Signup = async (req, res) => {
 
 
         // Check if passwords match
-        if (Password !== ConfirmPassword) {
-            return res.status(400).json({
-                success: false,
-                message: "Passwords do not match",
-            });
-        }
+        // if (Password !== ConfirmPassword) {
+        //     return res.status(400).json({
+        //         success: false,
+        //         message: "Passwords do not match",
+        //     });
+        // }
 
         // Hash the password
         const hashedPassword = await bcrypt.hash(Password, 10); // 10 is the salt rounds
@@ -31,6 +31,7 @@ exports.Signup = async (req, res) => {
             Lastname,
             Email,
             Password: hashedPassword, // Save hashed password
+            profileSetup:false
         });
 
 
@@ -45,6 +46,12 @@ exports.Signup = async (req, res) => {
         return res.status(200).json({
             success: true,
             message: "User created successfully",
+            data:{
+                Email:userdata.Email,
+                Firstname:userdata.Firstname,
+                Lastname:userdata.Lastname,
+                profileSetup:userdata.profileSetup
+            }
         });
     
 };
@@ -71,9 +78,18 @@ exports.Login = async (req, res)=>{
             })
         }
 
+        
+
         return res.status(200).json({
             success:true,
-            meesage:"User logedin"
+            meesage:"User logedin",
+            // token :token
+            data:{
+                Email:UserExist.Email,
+                Firstname:UserExist.Firstname,
+                Lastname:UserExist.Lastname,
+                profileSetup:UserExist.profileSetup
+            }
         })
         
     } catch (error) {

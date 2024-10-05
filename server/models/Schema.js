@@ -16,6 +16,10 @@ const User = new mongoose.Schema({
     Password:{
         type:String,
         required:true
+    },
+    profileSetup:{
+        type:Boolean,
+        required:true
     }
     
 },{timestamps:true})

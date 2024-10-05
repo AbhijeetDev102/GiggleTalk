@@ -1,15 +1,19 @@
 import { useState } from 'react'
 
 import { Route, Routes } from 'react-router-dom'
-import Auth from './components/auth'
+import Auth from './pages/Auth'
+import Profile from "./pages/Profile"
+import Chat from "./pages/Chat"
 
 function App() {
-  const [count, setCount] = useState(0)
+
 
   return (
     <>
       <Routes>
         <Route path='/auth' element={<Auth/>}/>
+        <Route path='/profile' element={<Profile/>}/>
+        <Route path='/chat' element={<Chat/>}/>
       </Routes>
     </>
   )

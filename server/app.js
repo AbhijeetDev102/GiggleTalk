@@ -1,7 +1,7 @@
 
 const express = require("express")
 const app = express()
-
+const cors = require("cors")
 
 // configs , dbconnect , cookieparser , environment variables
 const cookieParser = require("cookie-parser")
@@ -13,6 +13,11 @@ app.use(express.json())
 const dbConnect = require("./config/dbConnect")
 dbConnect()
 
+app.use(cors({
+    origin:"http://localhost:5173",
+    methods:["*"],
+    credentials: true
+}))
 const router = require("./routers/router")
 app.use("/api/v1", router)
 
@@ -21,15 +26,14 @@ const {createServer}=require("http")
 const {Server}=require("socket.io")
 
 
- 
 const server = createServer(app)
-const io = new Server(server, {
-    cors:{
-        origin:"*",
-        methods:["*"]
+// const io = new Server(server, {
+//     cors:{
+//         origin:"*",
+//         methods:["*"]
         
-    }
-})
+//     }
+// })
 
 
 
