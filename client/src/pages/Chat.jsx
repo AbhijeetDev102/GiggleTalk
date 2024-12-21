@@ -1,11 +1,24 @@
+import axios from 'axios'
 import React, { useEffect } from 'react'
 
 const Chat = () => {
-  useEffect(async ()=>{
-    await axios.get(`${import.meta.env.VITE_BASE_URL}/chat`)
-  },[])
+  
+  const auth = async () => {
+  try {
+    await axios.post(`${import.meta.env.VITE_BASE_URL}/chat`, { token: localStorage.getItem("token") })
+  } catch (error) {
+    console.log(error.message);
+    
+    
+  }
+  }
+
+  useEffect(() => {
+  auth()
+  }, [])
+
   return (
-    <div>Chat</div>
+  <div>Chat</div>
   )
 }
 
