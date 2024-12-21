@@ -1,11 +1,12 @@
 const User = require("../models/Schema");
+const { where } = require("sequelize")
 const bcrypt = require("bcrypt");
 const jwt= require("jsonwebtoken")
 exports.Signup = async (req, res) => {
     
         const { Firstname, Lastname, Email, Password, ConfirmPassword } = req.body;
 
-        const UserExist = await User.findOne({Email})
+        const UserExist = await User.findOne({ where:{Email} })
         if (UserExist){
             return res.json({
                 success:false,
@@ -63,7 +64,7 @@ exports.Login = async (req, res)=>{
     try {
         const {Email, Password} = req.body;
 
-        const UserExist = await User.findOne({Email})
+        const UserExist = await User.findOne({where: {Email}})
         if (!UserExist){
             return res.json({
                 success:false,

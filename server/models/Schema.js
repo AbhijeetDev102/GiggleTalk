@@ -1,28 +1,29 @@
-const mongoose = require("mongoose")
+const {DataTypes } = require('sequelize');
+const sequelize = require("../config/dbConnect"); // Example for sqlite, change to your database
 
-const User = new mongoose.Schema({
-    Firstname:{
-        type:String,
-        required:true
+const User = sequelize.define('User', {
+    Firstname: {
+        type: DataTypes.STRING,
+        allowNull: false
     },
-    Lastname:{
-        type:String,
-        required:true
+    Lastname: {
+        type: DataTypes.STRING,
+        allowNull: false
     },
-    Email:{
-        type:String,
-        required:true
+    Email: {
+        type: DataTypes.STRING,
+        allowNull: false
     },
-    Password:{
-        type:String,
-        required:true
+    Password: {
+        type: DataTypes.STRING,
+        allowNull: false
     },
-    profileSetup:{
-        type:Boolean,
-        required:true
+    profileSetup: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false
     }
-    
-},{timestamps:true})
+}, {
+    timestamps: true
+});
 
-
-module.exports =  mongoose.model("User", User)
+module.exports = User;

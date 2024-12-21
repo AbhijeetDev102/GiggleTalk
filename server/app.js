@@ -2,7 +2,7 @@
 const express = require("express")
 const app = express()
 const cors = require("cors")
-
+const colors = require("colors");
 // configs , dbconnect , cookieparser , environment variables
 const cookieParser = require("cookie-parser")
 app.use(cookieParser())
@@ -10,8 +10,7 @@ app.use(cookieParser())
 require("dotenv").config()
 app.use(express.json())
 
-const dbConnect = require("./config/dbConnect")
-dbConnect()
+
 
 app.use(cors({
     origin:"http://localhost:5173",
@@ -24,6 +23,7 @@ app.use("/api/v1", router)
 // Creating server using socket.io 
 const {createServer}=require("http")
 const {Server}=require("socket.io")
+const sequelize = require("./config/dbConnect")
 
 
 const server = createServer(app)
@@ -38,5 +38,12 @@ const server = createServer(app)
 
 
 
-server.listen(process.env.PORT, ()=>{console.log('server is running at port 8000');
+server.listen(process.env.PORT, ()=>{console.log('server is running at port 8000'.bgGreen.bold);
 })
+
+sequelize.sync({alter:true})
+   .then(()=>{
+        console.log("sync successfull".bgBlue)
+    }).catch((err)=>{
+        throw err
+    })
