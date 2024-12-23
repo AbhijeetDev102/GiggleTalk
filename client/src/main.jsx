@@ -3,15 +3,18 @@ import { createRoot } from 'react-dom/client'
 import App from './App.jsx'
 import './index.css'
 import { BrowserRouter } from 'react-router-dom'
+import { StyledEngineProvider } from "@mui/material"
 import {Provider} from "react-redux"
 import { store } from './reduxStore/store.jsx'
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
+    <StyledEngineProvider injectFirst>
     <Provider store={store}>
     <BrowserRouter>
     <App />
     </BrowserRouter>
     </Provider>
+    </StyledEngineProvider>
   </StrictMode>,
 )
