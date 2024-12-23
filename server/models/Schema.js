@@ -18,6 +18,14 @@ const User = sequelize.define('User', {
         type: DataTypes.STRING,
         allowNull: false
     },
+    phoneNumber:{
+        type:DataTypes.STRING,
+        validate: {
+            len: [10, 15]
+        },
+        allowNull:false,
+
+    },
     profileSetup: {
         type: DataTypes.BOOLEAN,
         allowNull: false
