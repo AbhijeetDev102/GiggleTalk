@@ -81,6 +81,14 @@ exports.Login = async (req, res)=>{
             })
         }
 
+        const payload = {
+            Firstname:UserExist.Firstname,
+            Lastname:UserExist.Lastname,
+            Email:UserExist.Email, 
+            profileSetup
+        }
+
+        const token = jwt.sign(payload, process.env.JWT_SECRETE)
         
 
         return res.status(200).json({
@@ -91,6 +99,7 @@ exports.Login = async (req, res)=>{
                 Email:UserExist.Email,
                 Firstname:UserExist.Firstname,
                 Lastname:UserExist.Lastname,
+                token:token,
                 profileSetup:UserExist.profileSetup
             }
         })
