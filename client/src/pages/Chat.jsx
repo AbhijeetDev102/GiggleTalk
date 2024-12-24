@@ -1,25 +1,57 @@
 import axios from "axios";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { MutatingDots } from "react-loader-spinner";
 import UserChat from "../components/UserChat";
 import Messages from "../components/Messages";
+import { io } from "socket.io-client";
+import { useSelector } from "react-redux";
 
 const Chat = () => {
+  const data = useSelector((messageState) => messageState.message.messageValue);
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
+  const socket = useRef(null); // Use useRef to store the socket instance
+
+  useEffect(() => {
+    socket.current = io(import.meta.env.VITE_BASE_URL); // Initialize socket connection
+
+    socket.current.on("connect", () => {
+      console.log("Connected to server");
+    });
+
+    socket.current.on("Recived-message", (message) => {
+      console.log("Message Recived", message);
+    });
+
+    return () => {
+      socket.current.disconnect(() => {
+        console.log("Disconnected from server");
+      });
+    };
+  }, []);
+
+  useEffect(() => {
+    if (socket.current && data!=null) {
+      socket.current.emit("message", data);
+    }
+  }, [data]);
+
   const auth = async () => {
     try {
       const response = await axios.post(
-        `${import.meta.env.VITE_BASE_URL}/chat`,
+        `${import.meta.env.VITE_BASE_URL}/api/v1/chat`,
         { token: localStorage.getItem("token") }
       );
-      
+
       if (!response.data.status) {
         navigate("/auth");
-      }else{setLoading(false)}
+      } else {
+        setLoading(false);
+      }
     } catch (error) {
       console.log(error.message);
+      navigate("/auth");
     }
   };
 

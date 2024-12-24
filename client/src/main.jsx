@@ -8,7 +8,7 @@ import {Provider} from "react-redux"
 import { store } from './reduxStore/store.jsx'
 
 createRoot(document.getElementById('root')).render(
-  <StrictMode>
+  <>
     <StyledEngineProvider injectFirst>
     <Provider store={store}>
     <BrowserRouter>
@@ -16,5 +16,5 @@ createRoot(document.getElementById('root')).render(
     </BrowserRouter>
     </Provider>
     </StyledEngineProvider>
-  </StrictMode>,
+  </>,
 )

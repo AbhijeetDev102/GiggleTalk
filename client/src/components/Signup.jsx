@@ -15,7 +15,7 @@ const Signup = ({ setComponent, passShow, setpassShow }) => {
 
     const submitHandler= async (Userdata)=>{
         try {
-          const res = await axios.post(`${import.meta.env.VITE_BASE_URL}/signup`, Userdata, {withCredentials:true})
+          const res = await axios.post(`${import.meta.env.VITE_BASE_URL}/api/v1/signup`, Userdata, {withCredentials:true})
           console.log(res);
           dispatch(setUserinfo(res.data.data))
           localStorage.setItem("token", res.data.data.token)

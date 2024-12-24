@@ -1,14 +1,20 @@
 import { Avatar, Button } from "@mui/material";
 // import {SendIcon} from "@mui/icons-material/Send"
 import React, { useState } from "react";
+import { useDispatch } from "react-redux";
+import { SetMessage } from "../reduxStore/slices/message-slice";
 
 const Messages = () => {
   const [message, setMessage] = useState("");
+  const dispatch = useDispatch()
 
   const handleSend = () => {
+
     if (message.trim()) {
       console.log("Message sent:", message);
       setMessage("");
+      dispatch(SetMessage(message))
+
     }
   };
 

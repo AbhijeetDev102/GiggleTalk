@@ -11,7 +11,7 @@ const Login = ({ setComponent, passShow, setpassShow }) => {
   const submitHandler = async (Userdata) => {
     try {
       const res = await axios.post(
-        `${import.meta.env.VITE_BASE_URL}/login`,
+        `${import.meta.env.VITE_BASE_URL}/api/v1/login`,
         Userdata,
         {withCredentials:true}
       );
