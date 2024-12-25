@@ -4,7 +4,7 @@ const bcrypt = require("bcrypt");
 const jwt= require("jsonwebtoken")
 exports.Signup = async (req, res) => {
     
-        const { Firstname, Lastname, Email, Password, ConfirmPassword } = req.body;
+        const { Firstname, Lastname, Email, Password, ConfirmPassword , phoneNumber} = req.body;
 
         const UserExist = await User.findOne({ where:{Email} })
         if (UserExist){
@@ -27,17 +27,18 @@ exports.Signup = async (req, res) => {
         const hashedPassword = await bcrypt.hash(Password, 10); // 10 is the salt rounds
 
         // Create the user with hashed password
-        const profileSetup = true
+        const profileSetup = false
         const userdata = await User.create({
             Firstname,
             Lastname,
             Email,
             Password: hashedPassword, // Save hashed password
+            phoneNumber:phoneNumber,
             profileSetup:profileSetup
         });
 
 
-        const payload = {Firstname,Lastname, Email, profileSetup}
+        const payload = {profileSetup}
 
         const token = jwt.sign(payload, process.env.JWT_SECRETE)
         console.log(token);
@@ -84,8 +85,9 @@ exports.Login = async (req, res)=>{
         const payload = {
             Firstname:UserExist.Firstname,
             Lastname:UserExist.Lastname,
-            Email:UserExist.Email, 
-            profileSetup
+            Email:UserExist.Email,
+            userId:UserExist.id,
+            profileSetup:UserExist.profileSetup
         }
 
         const token = jwt.sign(payload, process.env.JWT_SECRETE)

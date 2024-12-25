@@ -24,12 +24,27 @@ const User = sequelize.define('User', {
             len: [10, 15]
         },
         allowNull:false,
-
     },
     profileSetup: {
         type: DataTypes.BOOLEAN,
         allowNull: false
-    }
+    },
+    bio: {
+        type: DataTypes.STRING,
+        allowNull: true,
+      },
+      profilePic: {
+        type: DataTypes.STRING,
+        allowNull: true,
+      },
+      location: {
+        type: DataTypes.STRING,
+        allowNull: true,
+      },
+      userId: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+      },
 }, {
     timestamps: true
 });
