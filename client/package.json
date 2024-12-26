@@ -12,8 +12,8 @@
   "dependencies": {
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.0",
-    "@mui/icons-material": "^6.2.1",
-    "@mui/material": "^6.2.1",
+    "@mui/icons-material": "^6.3.0",
+    "@mui/material": "^6.3.0",
     "@reduxjs/toolkit": "^2.2.7",
     "axios": "^1.7.7",
     "boxicons": "^2.1.4",
@@ -23,6 +23,7 @@
     "react-loader-spinner": "^6.1.6",
     "react-redux": "^9.2.0",
     "react-router-dom": "^6.26.1",
+    "react-toastify": "^11.0.2",
     "socket.io-client": "^4.8.1",
     "yup": "^1.4.0"
   },
