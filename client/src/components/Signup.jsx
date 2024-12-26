@@ -4,12 +4,11 @@ import { useFormik } from "formik";
 import { SignupSchema } from "../Schema/Schema";
 import axios from 'axios';
 import {useNavigate} from "react-router-dom"
-import {useDispatch} from "react-redux"
-import { setUserinfo } from '../reduxStore/slices/auth-slice';
+
+
 
 // signup component
 const Signup = ({ setComponent, passShow, setpassShow }) => {
-    const dispatch = useDispatch()
     const navigate = useNavigate();
 
 
@@ -17,9 +16,9 @@ const Signup = ({ setComponent, passShow, setpassShow }) => {
         try {
           const res = await axios.post(`${import.meta.env.VITE_BASE_URL}/api/v1/signup`, Userdata, {withCredentials:true})
           console.log(res);
-          dispatch(setUserinfo(res.data.data))
-          localStorage.setItem("token", res.data.data.token)
+
           navigate("/profile")
+          localStorage.setItem("token", res.data.data.token)
 
 
 
@@ -36,6 +35,7 @@ const Signup = ({ setComponent, passShow, setpassShow }) => {
           Firstname: "",
           Lastname: "",
           Email: "",
+          PhoneNumber:"",
           Password: "",
           ConfirmPassword: "",
         },
@@ -99,6 +99,21 @@ const Signup = ({ setComponent, passShow, setpassShow }) => {
   
             {errors.Email && touched.Email ? (
               <p className="text-red-500">{errors.Email}</p>
+            ) : null}
+          </div>
+          <div className="w-full p-2"> 
+            <input
+              name="PhoneNumber"
+              type="text"
+              placeholder="Phone Number"
+              value={values.PhoneNumber}
+              onChange={handleChange}
+              onBlur={handleBlur}
+              className="border border-green-300 rounded-xl  p-2 outline-none w-[95%]"
+            />
+  
+            {errors.PhoneNumber && touched.PhoneNumber ? (
+              <p className="text-red-500">{errors.PhoneNumber}</p>
             ) : null}
           </div>
   
