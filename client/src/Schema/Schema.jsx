@@ -4,6 +4,7 @@ export const SignupSchema = Yup.object({
   Firstname: Yup.string().min(3).required("Please enter first name"),
   Lastname: Yup.string().min(3).required("Please enter last name"),
   Email: Yup.string().min(3).required("Please enter email name"),
+  PhoneNumber: Yup.string().min(10).required("Please enter your phone number"),
   Password: Yup.string().min(3).required("Please enter password name"),
   ConfirmPassword: Yup.string()
     .required("Please confirm password")
