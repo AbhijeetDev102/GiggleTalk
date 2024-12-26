@@ -43,11 +43,11 @@ const UserChat = () => {
       <div className="flex flex-col justify-center items-center mb-4">
         <input
           type="text"
-          className="h-[2rem] w-[93%] bg-slate-600 border-b-2 p-3 border-slate-200 outline-none"
+          className="h-[2rem] w-[93%] bg-slate-700 border-b-2 p-3 border-slate-200 outline-none"
         />
       </div>
       <div className="flex flex-col  items-center overflow-auto h-full">
-        <div className="w-[95%] cursor-pointer bg-slate-600 rounded-xl mt-2 p-[0.8rem] flex  items-center hover:bg-slate-500 transition-all ease-in-out duration-200">
+        <div className="w-[95%] cursor-pointer bg-slate-700 rounded-xl mt-2 p-[0.8rem] flex  items-center hover:bg-slate-500 transition-all ease-in-out duration-200">
         <StyledBadge
         overlap="circular"
         anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}

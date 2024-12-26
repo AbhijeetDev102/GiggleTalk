@@ -1,10 +1,16 @@
 import { Avatar, Button } from "@mui/material";
 // import {SendIcon} from "@mui/icons-material/Send"
-import React, { useState } from "react";
-import { useDispatch } from "react-redux";
+import React, {  useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { SetMessage } from "../reduxStore/slices/message-slice";
 
 const Messages = () => {
+
+  
+    
+
+
+
   const [message, setMessage] = useState("");
   const dispatch = useDispatch()
 
@@ -27,7 +33,7 @@ const Messages = () => {
   return (
     <div className="h-full w-full">
       <div className="flex flex-col h-full justify-between items-center md:py-4 gap-3">
-        <div className="rounded-2xl w-[97%] h-[3rem] bg-slate-600 flex items-center px-5">
+        <div className="rounded-2xl w-[97%] h-[3rem] bg-slate-700 flex items-center px-5">
           <div>
             <Avatar
               className="h-7 w-7 "
@@ -37,11 +43,11 @@ const Messages = () => {
           </div>
           <div></div>
         </div>
-        <div className="rounded-2xl flex-grow  w-[97%]  bg-slate-600"></div>
+        <div className="rounded-2xl flex-grow  w-[97%]  bg-slate-700"></div>
         <div className="w-[97%] h-[2.5rem] flex justify-between items-center">
           <input
             type="text"
-            className="outline-none rounded-2xl p-4 text-slate-200 h-full w-[88%] bg-slate-600"
+            className="outline-none rounded-2xl p-4 text-slate-200 h-full w-[88%] bg-slate-700"
             value={message}
             onChange={(e) => setMessage(e.target.value)}
             onKeyPress={handleKeyPress}
