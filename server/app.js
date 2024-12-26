@@ -1,36 +1,48 @@
 
 const express = require("express")
-const app = express()
-
-
-
-
-
 const cors = require("cors")
-const colors = require("colors");
-// configs , dbconnect , cookieparser , environment variables
-const cookieParser = require("cookie-parser")
-app.use(cookieParser())
+const app = express()
+const cloudinary = require("./config/cloudinary")
+const fileUpload = require("express-fileupload");
 
 require("dotenv").config()
 app.use(express.json())
 
-
-
+//cors setup for comuniction with frontend
 app.use(cors({
     origin:"http://localhost:5173",
     methods:["*"],
     credentials: true
 }))
+
+//file upload setup for cloudinary
+app.use(fileUpload({
+    useTempFiles : true,
+    tempFileDir : '/tmp/'
+}));
+
+
+const colors = require("colors");
+// configs , dbconnect , cookieparser , environment variables
+const cookieParser = require("cookie-parser")
+app.use(cookieParser())
+
+
+cloudinary.cloudinaryConnect();
+
+
+//router setup 
 const router = require("./routers/router")
 app.use("/api/v1", router)
+
+
 
 
 
 // Creating server using socket.io 
 const {createServer}=require("http")
 const {Server}=require("socket.io")
-const sequelize = require("./config/dbConnect")
+const sequelize = require("./config/dbConnect");
 
 // socket io server
 const server = createServer(app)

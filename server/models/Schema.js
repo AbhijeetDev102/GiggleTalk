@@ -18,7 +18,7 @@ const User = sequelize.define('User', {
         type: DataTypes.STRING,
         allowNull: false
     },
-    phoneNumber:{
+    PhoneNumber:{
         type:DataTypes.STRING,
         validate: {
             len: [10, 15]
@@ -34,10 +34,6 @@ const User = sequelize.define('User', {
         allowNull: true,
       },
       profilePic: {
-        type: DataTypes.STRING,
-        allowNull: true,
-      },
-      location: {
         type: DataTypes.STRING,
         allowNull: true,
       },
