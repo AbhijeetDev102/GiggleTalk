@@ -4,6 +4,7 @@ import axios from "axios";
 import { useFormik } from "formik";
 import { LoginSchema } from "../Schema/Schema";
 import {useNavigate} from "react-router-dom"
+import { apiUrl } from "../../services/apiJson";
 
 
 const Login = ({ setComponent, passShow, setpassShow }) => {
@@ -11,7 +12,7 @@ const Login = ({ setComponent, passShow, setpassShow }) => {
   const submitHandler = async (Userdata) => {
     try {
       const res = await axios.post(
-        `${import.meta.env.VITE_BASE_URL}/api/v1/login`,
+        `${apiUrl}/api/v1/login`,
         Userdata,
         {withCredentials:true}
       );
