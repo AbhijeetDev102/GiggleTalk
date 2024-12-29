@@ -41,32 +41,13 @@ app.use("/api/v1", router)
 
 // Creating server using socket.io 
 const {createServer}=require("http")
-const {Server}=require("socket.io")
+
 const sequelize = require("./config/dbConnect");
+const initializeSocket = require("./SocketIO/socket");
 
 // socket io server
 const server = createServer(app)
-const io = new Server(server, {
-    cors:{
-        origin:"*",
-        methods:["*"],
-        credentials:true
-        
-    }
-})
-
-io.on('connection', (socket)=>{
-    console.log("New User connected to server ",socket.id);
-    socket.on("message",(message)=>{
-        console.log("message received",message);
-        io.emit("Recived-message",message)
-    })
-
-    socket.on("disconnect",()=>{
-        console.log("User disconnected from server",socket.id);
-    })
-    
-})
+initializeSocket(server)
 
 
 
