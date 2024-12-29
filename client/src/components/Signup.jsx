@@ -4,6 +4,7 @@ import { useFormik } from "formik";
 import { SignupSchema } from "../Schema/Schema";
 import axios from 'axios';
 import {useNavigate} from "react-router-dom"
+import { apiUrl } from '../../services/apiJson';
 
 
 
@@ -14,7 +15,7 @@ const Signup = ({ setComponent, passShow, setpassShow }) => {
 
     const submitHandler= async (Userdata)=>{
         try {
-          const res = await axios.post(`${import.meta.env.VITE_BASE_URL}/api/v1/signup`, Userdata, {withCredentials:true})
+          const res = await axios.post(`${apiUrl}/api/v1/signup`, Userdata, {withCredentials:true})
           console.log(res);
 
           navigate("/profile")
