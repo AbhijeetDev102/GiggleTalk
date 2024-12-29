@@ -4,6 +4,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import axios from "axios";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
+import { apiJson, apiUrl } from "../../services/apiJson";
 
 const Profile = () => {
   const [formData, setFormData] = useState({
@@ -35,10 +36,9 @@ const Profile = () => {
 
     try {
       // Send the form data to the backend
-      const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/api/v1/createProfile`, data, {
+      const response = await apiJson.post(`${apiUrl}/api/v1/createProfile`, data, {
         headers: { 
           "Content-Type": "multipart/form-data",
-          "Authorization": `Bearer ${localStorage.getItem("token")}` // Add token here
         },
       });
       toast.success(response.data.message);
@@ -51,7 +51,7 @@ const Profile = () => {
   return (
     <div className="h-screen flex flex-col items-center justify-center p-5 bg-gray-900 text-white">
       <form onSubmit={handleSubmit} className="w-full max-w-md">
-        <div className="relative mb-5 bg-slate-700 ring-8 ring-slate-600 text-3xl rounded-full group mx-auto flex items-center justify-center h-64 w-64">
+        <div className="relative mb-5 theme-sm ring-8 ring-slate-600 text-3xl rounded-full group mx-auto flex items-center justify-center h-64 w-64">
           <label htmlFor="profilePicInput" className="cursor-pointer relative h-full w-full flex items-center justify-center">
             <Avatar 
               className="h-full w-full"
