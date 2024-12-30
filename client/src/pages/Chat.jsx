@@ -8,6 +8,7 @@ import { io } from "socket.io-client";
 import { useDispatch, useSelector } from "react-redux";
 import LogoutRoundedIcon from '@mui/icons-material/LogoutRounded';
 import { setGroupId } from "../reduxStore/slices/socketInfo";
+import { apiUrl } from "../../services/apiJson";
  
 
 
@@ -57,6 +58,8 @@ const dispatch = useDispatch()
       });
     };
   }, []);
+
+
 
   useEffect(() => {
     if (socket.current && data != null) {
@@ -111,7 +114,7 @@ const dispatch = useDispatch()
               <UserChat setLoading={setLoading}/>
             </div>
             <div className="h-[98%] w-[64%] py-2 theme-md rounded-xl  md:block">
-              <Messages upcomingM={upcomingM} setUM={setUM}/>
+              <Messages upcomingM={upcomingM} setUM={setUM} socket={socket.current}/>
             </div>
           </div>
         </div>
