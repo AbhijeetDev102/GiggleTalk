@@ -19,6 +19,15 @@ const Messsage = sequelize.define( "Message",{
         type:DataTypes.STRING,
         allowNull:false
     },
+    deleteFromUserId:{
+        type:DataTypes.INTEGER,
+        allowNull:true
+    },
+    deleteFromEveryOne:{
+        type:DataTypes.BOOLEAN,
+        allowNull:true
+        
+    }
 
 },{
     timestamps:true

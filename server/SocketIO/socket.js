@@ -1,5 +1,5 @@
 const { Server } = require('socket.io');
-const { createMessage } = require('../controllers/SingleChatController');
+
 
 const initializeSocket = (server) => {
 
@@ -29,11 +29,14 @@ io.on('connection',  (socket)=>{
     socket.on("message",async (message)=>{
         console.log("message received",message);
         if (socket.currentGroup) {
-            const result = await createMessage(message);
             socket.broadcast.to(socket.currentGroup).emit("Recived-message", message);
             // console.log(result);
             
         }
+    })
+
+    socket.on("deletedFromEveryOne", ()=>{
+        socket.broadcast.to(socket.currentGroup).emit("deleteMessage")
     })
 
     socket.on('logout', ()=>{

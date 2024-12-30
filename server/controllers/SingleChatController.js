@@ -54,69 +54,69 @@ exports.getGroupinfo = async (req, res) => {
 
     if (!userId) {
       return res.status(400).json({
-      success: false,
-      message: "userId is required",
+        success: false,
+        message: "userId is required",
       });
     }
 
     const existingUser = await User.findOne({ where: { userId } });
     if (!existingUser) {
       return res.status(404).json({
-      success: false,
-      message: "User not found",
+        success: false,
+        message: "User not found",
       });
     }
 
     const data = [];
     const groupData = await SingleChat.findAll({
       where: {
-      [Op.or]: [{ userId1: userId }, { userId2: userId }],
+        [Op.or]: [{ userId1: userId }, { userId2: userId }],
       },
-      order: [['updatedAt', 'DESC']]
+      order: [["updatedAt", "DESC"]],
     });
 
     if (!groupData.length) {
       return res.status(404).json({
-      success: false,
-      message: "No groups found for this user",
+        success: false,
+        message: "No groups found for this user",
       });
     }
 
     await Promise.all(
       groupData.map(async (group) => {
-      if (group.userId1 == userId) {
-        const user = await User.findOne({ where: { userId: group.userId2 } });
-        if (!user) {
-        return res.status(404).json({
-          success: false,
-          message: "User not found",
-        });
-        }
+        if (group.userId1 == userId) {
+          const user = await User.findOne({ where: { userId: group.userId2 } });
+          if (!user) {
+            return res.status(404).json({
+              success: false,
+              message: "User not found",
+            });
+          }
 
-        const userinfo = {
-        userId: group.userId2,
-        groupDP: user.profilePic,
-        groupName: user.Firstname + " " + user.Lastname,
-        groupId: group.groupId,
-        };
-        data.push(userinfo);
-      } else {
-        const user = await User.findOne({ where: { userId: group.userId1 } });
-        if (!user) {
-        return res.status(404).json({
-          success: false,
-          message: "User not found",
-        });
-        }
+          const userinfo = {
+            userId: group.userId2,
+            groupDP: user.profilePic,
+            groupName: user.Firstname + " " + user.Lastname,
+            groupId: group.groupId,
+          };
+          data.push(userinfo);
+        } else {
+          const user = await User.findOne({ where: { userId: group.userId1 } });
+          if (!user) {
+            return res.status(404).json({
+              success: false,
+              message: "User not found",
+            });
+          }
 
-        const userinfo = {
-        userId: group.userId1,
-        groupDP: user.profilePic,
-        groupName: user.Firstname + " " + user.Lastname,
-        groupId: group.groupId,
-        };
-        data.push(userinfo);
-      }
+          const userinfo = {
+            userId: group.userId1,
+            groupDP: user.profilePic,
+            groupName: user.Firstname + " " + user.Lastname,
+            groupId: group.groupId,
+          };
+          data.push(userinfo);
+        }
       })
     );
 
@@ -132,80 +132,126 @@ exports.getGroupinfo = async (req, res) => {
   }
 };
 
-
-exports.createMessage= async(message)=>{
-    try {
-
-      const singleChat = await SingleChat.findOne({where:{groupId:message.groupId}})
+exports.createMessage = async (req,res) => {
+  try {
+    const {message} = req.body
+    const singleChat = await SingleChat.findOne({
+      where: { groupId: message.groupId },
+    });
     const messageData = {
-      senderUserId:message.senderUserId,
-      reciverUserId:null,
-      groupId:message.groupId,
-      content:message.content
-    }
+      senderUserId: message.senderUserId,
+      reciverUserId: null,
+      groupId: message.groupId,
+      content: message.content,
+    };
 
-
-    if(message.senderUserId==singleChat.userId1){
-      messageData.reciverUserId = singleChat.userId2
-    }else{
-      messageData.reciverUserId = singleChat.userId1
+    if (message.senderUserId == singleChat.userId1) {
+      messageData.reciverUserId = singleChat.userId2;
+    } else {
+      messageData.reciverUserId = singleChat.userId1;
     }
 
     const messageCreate = await Messsage.create({
-      senderUserId:messageData.senderUserId,
-      reciverUserId:messageData.reciverUserId,
-      groupId:messageData.groupId,
-      content:messageData.content
-    })
+      senderUserId: messageData.senderUserId,
+      reciverUserId: messageData.reciverUserId,
+      groupId: messageData.groupId,
+      content: messageData.content,
+    });
 
     console.log(messageCreate);
 
-    return {
-      success:true,
-      message:"Message created successfully"
-    }
-
-
-    } catch (error) {
-      return {
-        success:false,
-        message :error.message
+    return res.status(200).json({
+      success: true,
+      message: "Message created successfully",
+      messageData:{
+        id: messageCreate.id,
+        senderUserId: messageCreate.senderUserId,
+        reciverUserId: messageCreate.reciverUserId,
+        groupId: messageCreate.groupId,
+        content:messageCreate.content
       }
-      
-    }
-    
-}
+    });
+  } catch (error) {
+    return res.status(500).json( {
+      success: false,
+      message: error.message,
+    });
+  }
+};
 
-
-exports.getPrevPrivateChat = async (req, res)=>{
-
+exports.getPrevPrivateChat = async (req, res) => {
   try {
-
-    const {groupId} = req.body
-    if(!groupId){
+    const { groupId } = req.body;
+    if (!groupId) {
       return res.status(400).json({
-        success:false,
-        message:"groupId is required"
-      })
+        success: false,
+        message: "groupId is required",
+      });
     }
     const messages = await Messsage.findAll({
       where: { groupId },
-      order: [['updatedAt', 'ASC']]
+      order: [["updatedAt", "ASC"]],
     });
 
     return res.status(200).json({
-      success:true,
-      data:messages
-    })
-
-    
+      success: true,
+      data: messages,
+    });
   } catch (error) {
     return res.status(500).json({
-      success:false,
-      message:error.message
-    })
-    
+      success: false,
+      message: error.message,
+    });
   }
+};
 
+exports.deleteMessage = async (req, res) => {
+  try {
+    const { deleteFromUserId, deleteFromEveryOne, messageId } = req.body;
 
-}
+    if (!messageId) {
+      return res.status(404).json({
+        success: false,
+        message: "please pass messageId to delete the message",
+      });
+    }
+
+    if (deleteFromEveryOne || deleteFromUserId) {
+      if (deleteFromEveryOne) {
+        await Messsage.destroy({ where: { id: messageId } });
+        return res.status(200).json({
+          success: true,
+          message: "Message deleted successfully for everyone",
+        });
+      } else {
+        const message = await Messsage.findOne({ where: { id: messageId } });
+        if (message.deleteFromUserId != null) {
+          await Messsage.destroy({ where: { id: messageId } });
+          return res.status(200).json({
+            success: true,
+            message: "Message deleted successfully for everyone",
+          });
+        } else {
+          await Messsage.update(
+            { deleteFromUserId },
+            { where: { id: messageId } }
+          );
+          return res.status(200).json({
+            success: true,
+            message: `Message was deleted for the user with userId ${deleteFromUserId}`,
+          });
+        }
+      }
+    } else {
+      return res.status(400).json({
+        success: false,
+        message: "No data has passed in delete api",
+      });
+    }
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
