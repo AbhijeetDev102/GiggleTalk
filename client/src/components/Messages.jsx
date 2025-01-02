@@ -85,14 +85,15 @@ const Messages = ({ upcomingM, setUM, socket }) => {
   };
 
   const [open, setOpen] = useState(false);
+  const [notMine, setNotMine] = useState(false);
 
   const handleOpen = () => setOpen(true);
   const handleClose = () => {
     setOpen(false);
     setDeleteStatus("");
+    setNotMine(false);
+    console.log(notMine);
   };
-
-  const [notMine, setNotMine] = useState(false);
 
   const handleMessageDelete = async (id) => {
     if (deleteStatus) {
@@ -102,6 +103,8 @@ const Messages = ({ upcomingM, setUM, socket }) => {
           messageId: id,
         });
         setNotMine(false);
+        console.log(notMine);
+
         console.log(response);
       } else if (deleteStatus == "deleteForEveryone") {
         const response = await axios.post(`${apiUrl}/api/v1/deleteMessage`, {
@@ -186,110 +189,50 @@ const Messages = ({ upcomingM, setUM, socket }) => {
                 return userdata &&
                   recivedmessage.senderUserId === userdata.userId ? (
                   <div key={index}>
-                  <div className="w-full text-end px-5 text-white">
-                    <IconButton
-                    aria-label="more"
-                    id="long-button"
-                    aria-controls={openMenu ? "long-menu" : undefined}
-                    aria-expanded={openMenu ? "true" : undefined}
-                    aria-haspopup="true"
-                    onClick={(e) => {
-                      handleClickMenu(e);
-                    }}
-                    >
-                    <MoreVertIcon />
-                    </IconButton>
-                    <Menu
-                    id="long-menu"
-                    MenuListProps={{
-                      "aria-labelledby": "long-button",
-                    }}
-                    anchorEl={anchorElMenu}
-                    open={openMenu}
-                    onClose={handleCloseMenu}
-                    PaperProps={{
-                      style: {
-                        border:"1px solid rgb(199, 58, 58)",
-                      backgroundColor: "#333",
-                      color: "white",
-                      width: "20ch",
-                      },
-                    }}
-                    >
-                    <MenuItem
-                      onClick={() => {
-                      handleCloseMenu();
-                      handleOpen();
-                      setMessageId(recivedmessage.id);
-                      }}
-                      style={{
-                        color: "lightcoral",
-                        fontWeight: "bold",
-                        
-                        textAlign: "center",
+                    <div className="w-full text-end px-5 text-white">
+                      <IconButton
+                        aria-label="more"
+                        id="long-button"
+                        aria-controls={openMenu ? "long-menu" : undefined}
+                        aria-expanded={openMenu ? "true" : undefined}
+                        aria-haspopup="true"
+                        onClick={(e) => {
+                         setMessageId(recivedmessage.id);
+                          handleClickMenu(e);
+                          console.log(messageId);
+                          
                         }}
-                    >
-                      Delete
-                    </MenuItem>
-                    </Menu>
-                    <p className="inline-block rounded-t-lg rounded-bl-lg theme-lg px-5 py-1 mb-3">
-                    {recivedmessage.content}
-                    </p>
-                  </div>
+                      >
+                        <MoreVertIcon />
+                      </IconButton>
+
+                      <p className="inline-block rounded-t-lg rounded-bl-lg theme-lg px-5 py-1 mb-3">
+                        {recivedmessage.content}
+                      </p>
+                    </div>
                   </div>
                 ) : (
                   <div key={index} className="w-full my-3 px-5 text-white">
-                  <p className="rounded-t-lg rounded-br-lg theme-lg inline-block px-5 py-1">
-                    {recivedmessage.content}
-                  </p>
-                  <button onClick={() => {}}>
+                    <p className="rounded-t-lg rounded-br-lg theme-lg inline-block px-5 py-1">
+                      {recivedmessage.content}
+                    </p>
+
                     <IconButton
-                    aria-label="more"
-                    id="long-button"
-                    aria-controls={openMenu ? "long-menu" : undefined}
-                    aria-expanded={openMenu ? "true" : undefined}
-                    aria-haspopup="true"
-                    onClick={(e) => {
-                      handleClickMenu(e);
-                    }}
-                    >
-                    <MoreVertIcon />
-                    </IconButton>
-                    <Menu
-                    id="long-menu"
-                    MenuListProps={{
-                      "aria-labelledby": "long-button",
-                    }}
-                    anchorEl={anchorElMenu}
-                    open={openMenu}
-                    onClose={handleCloseMenu}
-                    PaperProps={{
-                      style: {
-                        border:"1px solid rgb(199, 58, 58)",
-                      backgroundColor: "#333",
-                      color: "white",
-                      width: "20ch",
-                      },
-                    }}
-                    >
-                    <MenuItem
-                      onClick={() => {
-                      handleCloseMenu();
-                      handleOpen();
-                      setMessageId(recivedmessage.id);
-                      setNotMine(true);
+                      aria-label="more"
+                      id="long-button"
+                      aria-controls={openMenu ? "long-menu" : undefined}
+                      aria-expanded={openMenu ? "true" : undefined}
+                      aria-haspopup="true"
+                      onClick={(e) => {
+                        setMessageId(recivedmessage.id);
+                        setNotMine(true);
+                        handleClickMenu(e);
+                          console.log(messageId);
+                          
                       }}
-                      style={{
-                        color: "lightcoral",
-                        fontWeight: "bold",
-                        
-                        textAlign: "center",
-                        }}
                     >
-                      Delete
-                    </MenuItem>
-                    </Menu>
-                  </button>
+                      <MoreVertIcon />
+                    </IconButton>
                   </div>
                 );
               }
@@ -317,6 +260,44 @@ const Messages = ({ upcomingM, setUM, socket }) => {
           </button>
         </div>
       </div>
+
+      <Menu
+        id="long-menu"
+        MenuListProps={{
+          "aria-labelledby": "long-button",
+        }}
+        anchorEl={anchorElMenu}
+        open={openMenu}
+        onClose={handleCloseMenu}
+        PaperProps={{
+          style: {
+            border: "1px solid rgb(199, 58, 58)",
+            backgroundColor: "#333",
+            color: "white",
+            width: "20ch",
+          },
+        }}
+      >
+        <MenuItem
+          onClick={(e) => {
+            handleCloseMenu(e);
+            handleOpen();
+      
+            
+            // console.log(notMine);
+           
+          }}
+          style={{
+            color: "lightcoral",
+            fontWeight: "bold",
+
+            textAlign: "center",
+          }}
+        >
+          Delete
+        </MenuItem>
+      </Menu>
+
       <Modal open={open} onClose={handleClose}>
         <Box className="flex flex-col justify-center  absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 shadow-lg p-4 rounded-lg bg-red-400/30 border border-red-300">
           <h2 className="text-xl  text-slate-100 mb-4">Delete message?</h2>
@@ -349,7 +330,6 @@ const Messages = ({ upcomingM, setUM, socket }) => {
             <Button
               variant="contained"
               onClick={() => {
-                setNotMine(false);
                 handleClose();
               }}
               className="bg-gray-500 hover:bg-gray-600"
@@ -362,7 +342,9 @@ const Messages = ({ upcomingM, setUM, socket }) => {
               className="bg-red-500 hover:bg-red-600"
               onClick={() => {
                 handleMessageDelete(messageId);
-                setNotMine(false);
+                // setNotMine(false);
+                // console.log(notMine);
+
                 handleClose();
               }}
             >
