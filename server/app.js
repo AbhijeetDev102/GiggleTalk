@@ -9,7 +9,10 @@ require("dotenv").config()
 app.use(express.json())
 
 //cors setup for comuniction with frontend
-app.use(cors())
+app.use(cors({
+    origin:"*",
+    credentials:true
+}))
 
 //file upload setup for cloudinary
 app.use(fileUpload({
