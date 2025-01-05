@@ -9,11 +9,7 @@ require("dotenv").config()
 app.use(express.json())
 
 //cors setup for comuniction with frontend
-app.use(cors({
-    origin:"giggle-talk.vercel.app",
-    methods:["*"],
-    credentials: true
-}))
+app.use(cors())
 
 //file upload setup for cloudinary
 app.use(fileUpload({
