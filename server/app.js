@@ -10,7 +10,7 @@ app.use(express.json())
 
 //cors setup for comuniction with frontend
 app.use(cors({
-    origin:"*",
+    origin:"giggle-talk.vercel.app",
     methods:["*"],
     credentials: true
 }))
