@@ -10,7 +10,7 @@ app.use(express.json())
 
 //cors setup for comuniction with frontend
 app.use(cors({
-    origin:"http://localhost:5173",
+    origin:"*",
     methods:["*"],
     credentials: true
 }))
