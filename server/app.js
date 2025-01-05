@@ -10,7 +10,7 @@ app.use(express.json())
 
 //cors setup for comuniction with frontend
 app.use(cors({
-    origin:"*",
+    origin:`${process.env.FRONT_END_BASEURL}`,
     credentials:true
 }))
 
