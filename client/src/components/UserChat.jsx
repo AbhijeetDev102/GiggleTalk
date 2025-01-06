@@ -9,6 +9,7 @@ import { apiUrl } from "../../services/apiJson";
 import {setGroupinfo } from "../reduxStore/slices/group-slice";
 import { getgroupData } from "../App";
 import { setGroupId } from "../reduxStore/slices/socketInfo";
+import { useNavigate } from "react-router-dom";
 
 const StyledBadge = styled(Badge)(({ theme }) => ({
   "& .MuiBadge-badge": {
@@ -40,6 +41,7 @@ const StyledBadge = styled(Badge)(({ theme }) => ({
 }));
 
 const UserChat = ({setLoading}) => {
+  const navigate = useNavigate()
   const dispatch = useDispatch();
   const userdata = useSelector((state) => state.auth.userinfo);
   const [Email, setEmail] = useState("")
@@ -66,7 +68,7 @@ const handleChange = (event) => {
   setEmail(event.target.value);
 };
 
-
+const socket = useSelector((state)=> state.socket.socketRef)
 const handleSubmit = async()=>{
   const res = await axios.post(`${apiUrl}/api/v1/newChat`, {
     groupId:`${Date.now()}`,
@@ -75,7 +77,7 @@ const handleSubmit = async()=>{
   } )
 
   // dispatch(setGroupinfo(res.data.data));
-  getgroupData(userdata.userId, dispatch)
+  getgroupData(userdata.userId, dispatch , socket)
   
 }
 
@@ -106,6 +108,7 @@ const handleSubmit = async()=>{
           type="text"
           className="h-8 w-11/12 theme-sm border-b-2 p-3 border-slate-200 outline-none "
         />
+        <button onClick={()=>{navigate("/video")}}>video</button>
       </div>
 
 
@@ -123,7 +126,7 @@ const handleSubmit = async()=>{
               variant="dot"
             >
               <Avatar
-                className="h-7 w-7 "
+                className="h-7 w-7  ring-2 ring-slate-300"
                 alt={`${group.groupName}`}
                 src={`${group.groupDP}`}
               />

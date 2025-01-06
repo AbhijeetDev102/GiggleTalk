@@ -4,10 +4,9 @@ import { useNavigate } from "react-router-dom";
 import { MutatingDots } from "react-loader-spinner";
 import UserChat from "../components/UserChat";
 import Messages from "../components/Messages";
-import { io } from "socket.io-client";
 import { useDispatch, useSelector } from "react-redux";
 import LogoutRoundedIcon from '@mui/icons-material/LogoutRounded';
-import { setGroupId } from "../reduxStore/slices/socketInfo";
+import { setGroupId, setSocketRef } from "../reduxStore/slices/socketInfo";
 import { apiUrl } from "../../services/apiJson";
  
 
@@ -17,10 +16,12 @@ const Chat = () => {
   
 const dispatch = useDispatch()
   const data = useSelector((messageState) => messageState.message.messageValue);
+  const groupIds = useSelector((state) => state.group.groupIds);
+
   const groupId = useSelector((state)=>state.socket.groupId)
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
-  const socket = useRef(null); // Use useRef to store the socket instance
+  
 
   
   const [upcomingM , setUM] = useState({
@@ -28,58 +29,60 @@ const dispatch = useDispatch()
     senderUserId:null
   })
 
-
+const socket =  useSelector((state)=>state.socket.socketRef)
 
   useEffect(() => {
-    socket.current = io(import.meta.env.VITE_BASE_URL); // Initialize socket connection
+    
+    if(socket){
+      
 
-    socket.current.on("connect", () => {
-      console.log("Connected to server");
+      socket.on("connect", () => {
+        console.log("Connected to server");
       setLoading(false)
-    });
 
-    socket.current.on("user-joined", (data)=>{
-      console.log(data);
-      
-    })
-
-
-    socket.current.on("Recived-message", (message) => {
-      console.log("Message Recived", message);
-      setUM(message)
-    });
-
-    return () => {
-      socket.current.off('connect')
-      socket.current.off('Recived-message')
-      
-      socket.current.disconnect(() => {
-        console.log("Disconnected from server");
       });
+  
+      socket.on("user-joined", (data)=>{
+        console.log(data);
+        
+      })
+  
+  
+      socket.on("Recived-message", (data) => {
+        console.log("Message Recived", data);
+        setUM(data)
+      });
+  
+      return () => {
+        socket.off('connect')
+        socket.off('Recived-message')
+        
+        
+    }
     };
-  }, []);
+  }, [socket]);
 
 
 
   useEffect(() => {
-    if (socket.current && data != null) {
-      socket.current.emit("message", data);
+    if (socket && data != null) {
+      socket.emit("message", {data, groupId});
     }
   }, [data]);
 
 
-  useEffect(()=>{
-    if(groupId!=null){
-      socket.current.emit("join-group", groupId)
-    }
+  // useEffect(()=>{
+  //   if(groupId!=null){
+  //     socket.emit("join-group", groupId)
+  //   }
 
-  }, [groupId])
+  // }, [groupId])
  
   
   const logout = ()=>{
     localStorage.clear()
     navigate("/auth")
-    socket.current.emit('logout')
+    socket.emit('logout', groupIds)
     dispatch(setGroupId(null))
   }
 
@@ -114,7 +117,7 @@ const dispatch = useDispatch()
               <UserChat setLoading={setLoading}/>
             </div>
             <div className="h-[98%] w-[64%] py-2 theme-md rounded-xl  md:block">
-              <Messages upcomingM={upcomingM} setUM={setUM} socket={socket.current}/>
+              <Messages upcomingM={upcomingM} setUM={setUM} socket={socket}/>
             </div>
           </div>
         </div>

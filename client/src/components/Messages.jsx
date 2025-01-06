@@ -5,11 +5,14 @@ import { SetMessage } from "../reduxStore/slices/message-slice";
 import TelegramIcon from "@mui/icons-material/Telegram";
 import { apiUrl } from "../../services/apiJson";
 import axios from "axios";
+import CallIcon from "@mui/icons-material/Call";
+import VideoCallIcon from '@mui/icons-material/VideoCall';
 
 import IconButton from "@mui/material/IconButton";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
+import { useNavigate } from "react-router-dom";
 
 const Messages = ({ upcomingM, setUM, socket }) => {
   const userdata = useSelector((state) => state.auth.userinfo);
@@ -112,7 +115,7 @@ const Messages = ({ upcomingM, setUM, socket }) => {
           messageId: id,
         });
 
-        socket.emit("deletedFromEveryOne");
+        socket.emit("deletedFromEveryOne", groupId);
         console.log(response);
       }
       previousMessage();
@@ -152,19 +155,25 @@ const Messages = ({ upcomingM, setUM, socket }) => {
     setAnchorElMenu(null);
   };
 
+  // const navigate = useNavigate()
+  const handleOpenWindow = () => {
+    window.open("/video", "_blank", "width=400,height=200");
+    // navigate("/video");
+  };
+
   return groupId ? (
     <div className="h-full w-full">
       <div className="flex flex-col h-full justify-between items-center md:py-2 gap-3">
-        <div className="rounded-2xl w-[97%] h-[4rem] theme-sm flex items-center p-5">
+        <div className="rounded-2xl w-[97%] h-[4rem] theme-sm flex items-center  p-5">
           {groupData &&
             groupData
               .filter((group) => group.groupId === groupId)
               .map((group, index) => {
                 return (
-                  <div key={index} className="flex">
+                  <div key={index} className=" w-full flex justify-between">
                     <div className="flex items-center gap-4">
                       <Avatar
-                        className="h-10 w-10"
+                        className="h-10 w-10 ring-2 ring-slate-300"
                         alt={`${group.groupName}`}
                         src={`${group.groupDP}`}
                       />
@@ -172,7 +181,20 @@ const Messages = ({ upcomingM, setUM, socket }) => {
                         {group.groupName}
                       </h2>
                     </div>
-                    <div></div>
+                    <div className="flex">
+                      <button
+                        className="theme-sm text-white rounded-2xl p-2 h-full w-16 flex justify-center items-center theme-hover"
+                        onClick={handleOpenWindow}
+                      >
+                        <CallIcon />
+                      </button>
+                      <button
+                        className="theme-sm text-white rounded-2xl p-2 h-full w-16 flex justify-center items-center theme-hover"
+                        onClick={handleOpenWindow}
+                      >
+                        <VideoCallIcon />
+                      </button>
+                    </div>
                   </div>
                 );
               })}
@@ -197,10 +219,9 @@ const Messages = ({ upcomingM, setUM, socket }) => {
                         aria-expanded={openMenu ? "true" : undefined}
                         aria-haspopup="true"
                         onClick={(e) => {
-                         setMessageId(recivedmessage.id);
+                          setMessageId(recivedmessage.id);
                           handleClickMenu(e);
                           console.log(messageId);
-                          
                         }}
                       >
                         <MoreVertIcon />
@@ -227,8 +248,7 @@ const Messages = ({ upcomingM, setUM, socket }) => {
                         setMessageId(recivedmessage.id);
                         setNotMine(true);
                         handleClickMenu(e);
-                          console.log(messageId);
-                          
+                        console.log(messageId);
                       }}
                     >
                       <MoreVertIcon />
@@ -282,10 +302,8 @@ const Messages = ({ upcomingM, setUM, socket }) => {
           onClick={(e) => {
             handleCloseMenu(e);
             handleOpen();
-      
-            
+
             // console.log(notMine);
-           
           }}
           style={{
             color: "lightcoral",
