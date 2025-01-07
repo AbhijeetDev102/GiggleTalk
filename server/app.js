@@ -4,15 +4,15 @@ const cors = require("cors")
 const app = express()
 const cloudinary = require("./config/cloudinary")
 const fileUpload = require("express-fileupload");
-
+//cors setup for comuniction with frontend
 require("dotenv").config()
+app.use(cors({
+    origin:  `${process.env.FRONT_END_BASEURL}`, // specify the allowed origin
+    credentials: true 
+}))
+
 app.use(express.json())
 
-//cors setup for comuniction with frontend
-app.use(cors({
-    origin:`${process.env.FRONT_END_BASEURL}`,
-    credentials:true
-}))
 
 //file upload setup for cloudinary
 app.use(fileUpload({
