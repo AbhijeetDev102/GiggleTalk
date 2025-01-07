@@ -8,10 +8,11 @@ const Video = () => {
   };
 
   const [offer, setOffer] = useState(null);
-  // const [call, setCall] = useState(false);
+  const [call, setCall] = useState(false);
   const [callAccepted, setcallAccepted] = useState(false);
   const socket = useSelector((state) => state.socket.socketRef);
   const pc = useRef(new RTCPeerConnection());
+  const iceCandidatesQueue = useRef([]);
 
   pc.current.onicecandidate = (e) => {
     if (e.candidate) {
@@ -19,27 +20,20 @@ const Video = () => {
     }
   };
 
-  // const groupId = useSelector((state) => state.group.groupId);
   const [userStream, setUserStream] = useState(null);
   const [myStream, setMyStream] = useState(null);
-  const iceCandidatesQueue = useRef([]);
-  
+
   const getStream = useCallback(async () => {
     const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
     pc.current.addStream(stream);
     setMyStream(stream);
   }, []);
 
-  const getUserStream = useCallback(async () => {
-    // pc.current.ontrack = (event) => {
-    //   console.log('Track event:', event);
-    //   setUserStream(event.streams[0]);
-    // };
-    pc.current.onaddstream = (event) => {
-      console.log('Add stream event:', event);
-      setUserStream(event.stream);
+
+  const getOtherUserStream = useCallback(async () => {
+    pc.current.ontrack = (event) => {
+      setUserStream(event.streams[0]);
     };
-  
   }, []);
 
   const joinGroup = () => {
@@ -60,30 +54,28 @@ const Video = () => {
         console.log(offer);
       });
       console.log("call made");
-      // setCall(true);
+      setCall(true);
     });
-    pc.current.ontrack = (event) => {
-      console.log('Track event:', event);
-      setUserStream(event.streams[0]);
-    };
   };
 
   const receiveCall = async () => {
-    getStream().then(async() => {
-      await pc.current.setRemoteDescription(new RTCSessionDescription(offer));
-      pc.current.createAnswer().then((answer) => {
-        pc.current.setLocalDescription(answer);
-        socket.emit('accept-call', answer);
-        console.log(answer);
-      });
-      await getUserStream();
-      console.log("call accepted");
+    await getStream();
+    await pc.current.setRemoteDescription(new RTCSessionDescription(offer));
+    pc.current.createAnswer().then((answer) => {
+      pc.current.setLocalDescription(answer);
+      socket.emit('accept-call', answer);
+      console.log(answer);
+    });
+    console.log("call accepted");
+    
 
-    })
+    // Add queued ICE candidates
     while (iceCandidatesQueue.current.length > 0) {
       const candidate = iceCandidatesQueue.current.shift();
       pc.current.addIceCandidate(new RTCIceCandidate(candidate));
     }
+
+    await getOtherUserStream();
   };
 
   const clearPeerConnection = () => {
@@ -99,14 +91,16 @@ const Video = () => {
       });
 
       socket.on("callAccepted", (answer) => {
-        // getUserStream()
-        pc.current.setRemoteDescription(new RTCSessionDescription(answer));
-        console.log("call accepted", answer);
-        setcallAccepted(true);
+        
+          pc.current.setRemoteDescription(new RTCSessionDescription(answer));
+          console.log("call accepted", answer);
+          setcallAccepted(true);
+          getOtherUserStream()
+      
       });
 
       socket.on("new-ice-candidate", (data) => {
-        if (pc.current.remoteDescription && pc.current.remoteDescription.type) {
+        if (pc.current.remoteDescription) {
           pc.current.addIceCandidate(new RTCIceCandidate(data));
         } else {
           iceCandidatesQueue.current.push(data);
@@ -124,16 +118,15 @@ const Video = () => {
     }
   }, [socket]);
 
+  useEffect(()=>{
+    getOtherUserStream()
+  },[callAccepted])
+
   useEffect(() => {
     return () => {
       clearPeerConnection();
     };
   }, []);
-
-  useEffect(() => {
-    getUserStream()
-  }, [callAccepted])
-  
 
   return (
     <div>
