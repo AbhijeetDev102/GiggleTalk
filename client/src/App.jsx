@@ -28,7 +28,7 @@ export const getgroupData = async(userId, dispatch, socketRef)=>{
         });
         dispatch(setGroupIds(groupIds))
         // console.log(socket);
-        socketRef.current.emit("join-group", groupIds)
+        socketRef.current.emit("join-groups", groupIds)
         
         
         
