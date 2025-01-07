@@ -8,7 +8,7 @@ const Video = () => {
   };
 
   const [offer, setOffer] = useState(null);
-  const [call, setCall] = useState(false);
+  // const [call, setCall] = useState(false);
   const [callAccepted, setcallAccepted] = useState(false);
   const socket = useSelector((state) => state.socket.socketRef);
   const pc = useRef(new RTCPeerConnection());
@@ -19,22 +19,27 @@ const Video = () => {
     }
   };
 
-  const groupId = useSelector((state) => state.group.groupId);
+  // const groupId = useSelector((state) => state.group.groupId);
   const [userStream, setUserStream] = useState(null);
   const [myStream, setMyStream] = useState(null);
   const iceCandidatesQueue = useRef([]);
   
   const getStream = useCallback(async () => {
     const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-    stream.getTracks().forEach(track => pc.current.addTrack(track, stream));
+    pc.current.addStream(stream);
     setMyStream(stream);
   }, []);
 
   const getUserStream = useCallback(async () => {
-    pc.current.ontrack = (event) => {
-      console.log('Track event:', event);
-      setUserStream(event.streams[0]);
+    // pc.current.ontrack = (event) => {
+    //   console.log('Track event:', event);
+    //   setUserStream(event.streams[0]);
+    // };
+    pc.current.onaddstream = (event) => {
+      console.log('Add stream event:', event);
+      setUserStream(event.stream);
     };
+  
   }, []);
 
   const joinGroup = () => {
@@ -55,7 +60,7 @@ const Video = () => {
         console.log(offer);
       });
       console.log("call made");
-      setCall(true);
+      // setCall(true);
     });
     pc.current.ontrack = (event) => {
       console.log('Track event:', event);
@@ -64,15 +69,17 @@ const Video = () => {
   };
 
   const receiveCall = async () => {
-    getStream()
-    await pc.current.setRemoteDescription(new RTCSessionDescription(offer));
-    pc.current.createAnswer().then((answer) => {
-      pc.current.setLocalDescription(answer);
-      socket.emit('accept-call', answer);
-      console.log(answer);
-    });
-    getUserStream();
-    console.log("call accepted");
+    getStream().then(async() => {
+      await pc.current.setRemoteDescription(new RTCSessionDescription(offer));
+      pc.current.createAnswer().then((answer) => {
+        pc.current.setLocalDescription(answer);
+        socket.emit('accept-call', answer);
+        console.log(answer);
+      });
+      await getUserStream();
+      console.log("call accepted");
+
+    })
     while (iceCandidatesQueue.current.length > 0) {
       const candidate = iceCandidatesQueue.current.shift();
       pc.current.addIceCandidate(new RTCIceCandidate(candidate));
@@ -92,14 +99,14 @@ const Video = () => {
       });
 
       socket.on("callAccepted", (answer) => {
-        getUserStream()
+        // getUserStream()
         pc.current.setRemoteDescription(new RTCSessionDescription(answer));
         console.log("call accepted", answer);
         setcallAccepted(true);
       });
 
       socket.on("new-ice-candidate", (data) => {
-        if (pc.current.remoteDescription) {
+        if (pc.current.remoteDescription && pc.current.remoteDescription.type) {
           pc.current.addIceCandidate(new RTCIceCandidate(data));
         } else {
           iceCandidatesQueue.current.push(data);
