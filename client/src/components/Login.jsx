@@ -16,7 +16,7 @@ const Login = ({ setComponent, passShow, setpassShow }) => {
         Userdata,
         {withCredentials:true}
       );
-      console.log(res);
+ 
       localStorage.setItem("token", res.data.data.token)
       if(res.data.data.profileSetup){
         navigate("/chat")

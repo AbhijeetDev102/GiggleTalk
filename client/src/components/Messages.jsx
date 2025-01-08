@@ -45,6 +45,7 @@ const Messages = ({ upcomingM, setUM, socket }) => {
   /// upcomming messages from other person
   const handleUpcomingM = () => {
     if (upcomingM.content.trim()) {
+      
       setRecivedMessage((prev) => [...prev, upcomingM]);
       setUM((prev) => ({ ...prev, content: "" }));
     }
@@ -61,8 +62,8 @@ const Messages = ({ upcomingM, setUM, socket }) => {
       const response = await axios.post(`${apiUrl}/api/v1/createMessage`, {
         message: messages,
       });
-      setRecivedMessage((prev) => [...prev, response.data.messageData]);
-      dispatch(SetMessage(response.data.messageData));
+       setRecivedMessage((prev) => [...prev, response.data.messageData]);
+       dispatch(SetMessage(response.data.messageData));
 
       setMessages((prev) => ({ ...prev, content: "" }));
     }
@@ -95,7 +96,6 @@ const Messages = ({ upcomingM, setUM, socket }) => {
     setOpen(false);
     setDeleteStatus("");
     setNotMine(false);
-    console.log(notMine);
   };
 
   const handleMessageDelete = async (id) => {
@@ -106,9 +106,6 @@ const Messages = ({ upcomingM, setUM, socket }) => {
           messageId: id,
         });
         setNotMine(false);
-        console.log(notMine);
-
-        console.log(response);
       } else if (deleteStatus == "deleteForEveryone") {
         const response = await axios.post(`${apiUrl}/api/v1/deleteMessage`, {
           deleteFromEveryOne: true,
@@ -116,7 +113,6 @@ const Messages = ({ upcomingM, setUM, socket }) => {
         });
 
         socket.emit("deletedFromEveryOne", groupId);
-        console.log(response);
       }
       previousMessage();
     }
@@ -129,7 +125,6 @@ const Messages = ({ upcomingM, setUM, socket }) => {
         groupId: groupId,
       });
       const data = response.data.data;
-      console.log(data);
       // setRecivedMessage([])
       setRecivedMessage([...data]);
     }
@@ -221,7 +216,7 @@ const Messages = ({ upcomingM, setUM, socket }) => {
                         onClick={(e) => {
                           setMessageId(recivedmessage.id);
                           handleClickMenu(e);
-                          console.log(messageId);
+                        
                         }}
                       >
                         <MoreVertIcon />
@@ -248,7 +243,7 @@ const Messages = ({ upcomingM, setUM, socket }) => {
                         setMessageId(recivedmessage.id);
                         setNotMine(true);
                         handleClickMenu(e);
-                        console.log(messageId);
+                       
                       }}
                     >
                       <MoreVertIcon />

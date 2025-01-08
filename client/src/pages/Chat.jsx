@@ -43,13 +43,12 @@ const socket =  useSelector((state)=>state.socket.socketRef)
       });
   
       socket.on("user-joined", (data)=>{
-        console.log(data);
         
       })
   
   
-      socket.on("Recived-message", (data) => {
-        console.log("Message Recived", data);
+      socket.on("Received-message", (data) => {
+       
         setUM(data)
       });
   
@@ -67,6 +66,7 @@ const socket =  useSelector((state)=>state.socket.socketRef)
   useEffect(() => {
     if (socket && data != null) {
       socket.emit("message", {data, groupId});
+    
     }
   }, [data]);
 

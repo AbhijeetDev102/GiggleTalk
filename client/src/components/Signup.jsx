@@ -16,7 +16,7 @@ const Signup = ({ setComponent, passShow, setpassShow }) => {
     const submitHandler= async (Userdata)=>{
         try {
           const res = await axios.post(`${apiUrl}/api/v1/signup`, Userdata, {withCredentials:true})
-          console.log(res);
+         
 
           navigate("/profile")
           localStorage.setItem("token", res.data.data.token)

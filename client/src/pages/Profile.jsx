@@ -26,7 +26,7 @@ const Profile = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log(formData.bio);
+    
     
     const data = new FormData();
 

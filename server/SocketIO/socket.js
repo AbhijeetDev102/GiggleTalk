@@ -11,6 +11,16 @@ const initializeSocket = (server) => {
   io.on('connection', (socket) => {
     console.log("New User connected to server ", socket.id);
 
+    socket.on("join-groups", (groupIds) => {
+      groupIds.forEach(groupId => {
+        socket.join(groupId);
+        console.log(`User ${socket.id} joined group ${groupId}`);
+      }
+      );
+    }
+    );
+    
+
     socket.on("join-group", (groupId) => {
       socket.join(groupId);
       socket.currentGroup = groupId;

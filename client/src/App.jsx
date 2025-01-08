@@ -52,7 +52,7 @@ function App() {
 
       if (response.data.data.profileSetup) {
          dispatch(setUserinfo(response.data.data));
-        console.log(response.data.data);
+      
         
         // console.log(response);
         // await getgroupData(response.data.data.userId)

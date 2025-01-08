@@ -55,7 +55,7 @@ const UserChat = ({setLoading}) => {
       
       
       setLoading(false)
-      console.log(groupdata);
+
       
       
     }
@@ -89,7 +89,6 @@ const handleSubmit = async()=>{
 
   const openGroup =(groupId)=>{
     dispatch(setGroupId(groupId))
-    console.log(groupId);
     
   }
 
