@@ -20,7 +20,7 @@ const Video = () => {
     }
   };
 
-  const [userStream, setUserStream] = useState(null);
+  const userStream = useRef(null)
   const [myStream, setMyStream] = useState(null);
 
   const getStream = useCallback(async () => {
@@ -32,9 +32,12 @@ const Video = () => {
 
   const getOtherUserStream = useCallback(async () => {
     pc.current.ontrack = (event) => {
-      setUserStream(event.streams[0]);
+      userStream.current.srcObject=event.streams[0];
+      setcallAccepted(true);
     };
   }, []);
+
+
 
   const joinGroup = () => {
     if (groupid) {
@@ -118,9 +121,11 @@ const Video = () => {
     }
   }, [socket]);
 
-  useEffect(()=>{
-    getOtherUserStream()
-  },[callAccepted])
+  useEffect(() => {
+    if (userStream.current) {
+      getOtherUserStream();
+    }
+  }, [userStream.current]);
 
   useEffect(() => {
     return () => {
@@ -145,10 +150,10 @@ const Video = () => {
           <video ref={(video) => { if (video) video.srcObject = myStream }} autoPlay></video>
         </div>
       )}
-      {userStream && (
+      {callAccepted && (
         <div>
           <p>Receiver Video</p>
-          <video ref={(video) => { if (video) video.srcObject = userStream }} autoPlay></video>
+          <video ref={userStream} autoPlay></video>
         </div>
       )}
       {offer && (
