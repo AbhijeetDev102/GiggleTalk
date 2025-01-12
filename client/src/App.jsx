@@ -11,6 +11,7 @@ import axios from "axios";
 import Video from "./components/Video";
 import { setSocketRef } from "./reduxStore/slices/socketInfo";
 import { io } from "socket.io-client";
+import DraggableDiv from "./pages/Test";
 
 export const getgroupData = async(userId, dispatch, socketRef)=>{
   
@@ -73,7 +74,11 @@ function App() {
 
   useEffect(() => {
     gettingData();
-    socket.current = io(import.meta.env.VITE_BASE_URL); // Initialize socket connection
+    socket.current = io(import.meta.env.VITE_BASE_URL, {
+      transports: ['websocket'],
+      path: '/socket.io',
+      withCredentials:true
+    }); // Initialize socket connection
     dispatch(setSocketRef(socket.current))
     return ()=>{
       socket.current.disconnect(() => {
@@ -90,6 +95,7 @@ function App() {
         <Route path="/profile" element={<Profile />} />
         <Route path="/chat" element={<Chat />} />
         <Route path="/video" element={<Video />} />
+        <Route path="/drag" element={<DraggableDiv />} />
     
       </Routes>
     </>
