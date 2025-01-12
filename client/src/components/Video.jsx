@@ -1,171 +1,88 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { useSelector } from 'react-redux';
-
+import { useDispatch, useSelector } from 'react-redux';
+import Peer from "peerjs"
+import { setCallMade, setIncommingCall } from '../reduxStore/slices/call-slice';
 const Video = () => {
-  const [groupid, setgroupid] = useState(null);
-  const handlechange = (e) => {
-    setgroupid(e.target.value);
-  };
-
-  const [offer, setOffer] = useState(null);
-  const [call, setCall] = useState(false);
-  const [callAccepted, setcallAccepted] = useState(false);
-  const socket = useSelector((state) => state.socket.socketRef);
-  const pc = useRef(new RTCPeerConnection());
-  const iceCandidatesQueue = useRef([]);
-
-  pc.current.onicecandidate = (e) => {
-    if (e.candidate) {
-      socket.emit("ice-candidate", { data: e.candidate, groupId: groupid });
-    }
-  };
-
-  const userStream = useRef(null)
-  const [myStream, setMyStream] = useState(null);
-
-  const getStream = useCallback(async () => {
-    const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-    pc.current.addStream(stream);
-    setMyStream(stream);
-  }, []);
-
-
-  const getOtherUserStream = useCallback(async () => {
-    pc.current.ontrack = (event) => {
-      userStream.current.srcObject=event.streams[0];
-      setcallAccepted(true);
-    };
-  }, []);
-
-
-
-  const joinGroup = () => {
-    if (groupid) {
-      socket.emit("join-group", groupid);
-    } else {
-      console.error("Group ID is not set");
-    }
-  };
-
-  const makeCall = () => {
-    getStream().then(() => {
-      pc.current.createOffer().then((offer) => {
-        pc.current.setLocalDescription(offer);
-        if (socket) {
-          socket.emit('incoming-call', offer);
-        }
-        console.log(offer);
-      });
-      console.log("call made");
-      setCall(true);
-    });
-  };
-
-  const receiveCall = async () => {
-    await getStream();
-    await pc.current.setRemoteDescription(new RTCSessionDescription(offer));
-    pc.current.createAnswer().then((answer) => {
-      pc.current.setLocalDescription(answer);
-      socket.emit('accept-call', answer);
-      console.log(answer);
-    });
-    console.log("call accepted");
-    
-
-    // Add queued ICE candidates
-    while (iceCandidatesQueue.current.length > 0) {
-      const candidate = iceCandidatesQueue.current.shift();
-      pc.current.addIceCandidate(new RTCIceCandidate(candidate));
-    }
-
-    await getOtherUserStream();
-  };
-
-  const clearPeerConnection = () => {
-    pc.current.close();
-    console.log("Peer connection closed");
-  };
+  const dispatch = useDispatch()
+  const myVideoRef = useSelector((state)=>state.call.myVideoRef)
+  const otherVideoRef = useSelector((state)=>state.call.otherVideoRef)
+  const incommingCall = useSelector((state)=>state.call.incommingCall)
+  const callMade = useSelector((state)=>state.call.callMade)
 
   useEffect(() => {
-    if (socket) {
-      socket.on("receive-call", (offer) => {
-        setOffer(offer);
-        console.log("incoming call", offer);
-      });
+    console.log("callmade",callMade)
+  }, [callMade])
 
-      socket.on("callAccepted", (answer) => {
-        
-          pc.current.setRemoteDescription(new RTCSessionDescription(answer));
-          console.log("call accepted", answer);
-          setcallAccepted(true);
-          getOtherUserStream()
-      
-      });
+  //function to accept the call using webrtc adn send the answer and stream 
+  const acceptCall = (incomingCall) => {
+    navigator.mediaDevices.getUserMedia({ video: true, audio: true })
+       .then((stream) => {
+         myVideoRef.current.srcObject = stream;
+         if (myVideoRef.current.paused || myVideoRef.current.ended) {
+           myVideoRef.current.play();
+         }
+         incomingCall.answer(stream);
+         incomingCall.on("stream", (remoteStream) => {
+           otherVideoRef.current.srcObject = remoteStream;
+           if (otherVideoRef.current.paused || otherVideoRef.current.ended) {
+             otherVideoRef.current.play();
+           }
+           
+         });
+       })
+       .catch((err) => {
+         console.log("Failed to get local stream", err);
+       });
+     }
+// function to end the call and stop the tracks
+     const endCall = () => {
+       setCallAccepted(false)
+       dispatch(setCallMade(false))
+       if (myVideoRef.current && myVideoRef.current.srcObject) {
+         myVideoRef.current.srcObject.getTracks().forEach(track => track.stop());
+         myVideoRef.current.srcObject = null;
+       }
+       if (otherVideoRef.current && otherVideoRef.current.srcObject) {
+         otherVideoRef.current.srcObject.getTracks().forEach(track => track.stop());
+         otherVideoRef.current.srcObject = null;
+       }
+     } 
 
-      socket.on("new-ice-candidate", (data) => {
-        if (pc.current.remoteDescription) {
-          pc.current.addIceCandidate(new RTCIceCandidate(data));
-        } else {
-          iceCandidatesQueue.current.push(data);
-        }
-        console.log("new ice candidate", data);
-      });
-
-      
-
-      return () => {
-        socket.off("receive-call");
-        socket.off("callAccepted");
-        clearPeerConnection();
-      };
-    }
-  }, [socket]);
-
-  useEffect(() => {
-    if (userStream.current) {
-      getOtherUserStream();
-    }
-  }, [userStream.current]);
-
-  useEffect(() => {
-    return () => {
-      clearPeerConnection();
-    };
-  }, []);
 
   return (
-    <div>
-      <input type="text" onChange={handlechange} />
-      <button onClick={joinGroup}>Join group</button>
-      <br />
-      <input type="text" />
-      <button onClick={() => {
-        console.log(pc.current);
-        makeCall();
-      }}>Call</button>
-
-      {myStream && (
-        <div>
-          <p>Sender Video</p>
-          <video ref={(video) => { if (video) video.srcObject = myStream }} autoPlay></video>
+    <>
+      
+      {/* || callAccepted==true */}
+      {/* {(callMade==true) && <div style={{ display: "flex", alignItems: "center" }}> */}
+        <div className='h-[95%] w-[90%] border-2 border-red-400 relative'>
+          <h2>Other person videos</h2>
+          <video
+            ref={otherVideoRef}
+            
+           
+          ></video>
         </div>
-      )}
-      {callAccepted && (
-        <div>
-          <p>Receiver Video</p>
-          <video ref={userStream} autoPlay></video>
+        <div className='absolute z-1 bottom-6 right-6 h-[20%] w-[20%] border-2 border-red-400'>
+          <h2>My video </h2>
+          <video
+            
+            ref={myVideoRef}
+            muted
+          ></video>
         </div>
-      )}
-      {offer && (
-        <div>
-          <button onClick={receiveCall}>Accept call</button><br />
-          <button onClick={() => {
-            clearPeerConnection();
-            setCall(false);
-          }}>End call</button>
-        </div>
-      )}
-    </div>
+      {/* </div>} */}
+      {/* {incommingCall==true&&<div><button onClick={()=>{
+        setCallAccepted(true);
+        acceptCall(incommingStream);
+        dispatch(setIncommingCall(false));
+      }}>Accept Call</button></div>}
+      {(callMade==true || callAccepted==true) &&  <div><button onClick={()=>{
+        
+        
+        
+      }}>End Call</button></div>} */}
+    
+    </>
   );
 };
 
