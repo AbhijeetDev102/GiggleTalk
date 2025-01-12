@@ -1,24 +1,24 @@
-import { Avatar, Box, Button, Modal, Radio } from "@mui/material";
+import {Box, Button, Modal, Radio } from "@mui/material";
 import React, { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { SetMessage } from "../reduxStore/slices/message-slice";
 import TelegramIcon from "@mui/icons-material/Telegram";
 import { apiUrl } from "../../services/apiJson";
 import axios from "axios";
-import CallIcon from "@mui/icons-material/Call";
-import VideoCallIcon from '@mui/icons-material/VideoCall';
+
 
 import IconButton from "@mui/material/IconButton";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
-import { useNavigate } from "react-router-dom";
 
-const Messages = ({ upcomingM, setUM, socket }) => {
+import UserBar from "./userBar";
+
+const Messages = ({ upcomingM, setUM, socket, handleOpenWindow }) => {
   const userdata = useSelector((state) => state.auth.userinfo);
   const groupData = useSelector((state) => state.group.groupinfo);
   const groupId = useSelector((state) => state.socket.groupId);
-
+  
   const [messages, setMessages] = useState({
     content: "",
     senderUserId: null,
@@ -141,6 +141,15 @@ const Messages = ({ upcomingM, setUM, socket }) => {
     });
   });
 
+
+
+   
+  
+  
+
+
+
+ //menu for delete message
   const [anchorElMenu, setAnchorElMenu] = React.useState(null);
   const openMenu = Boolean(anchorElMenu);
   const handleClickMenu = (event) => {
@@ -150,11 +159,8 @@ const Messages = ({ upcomingM, setUM, socket }) => {
     setAnchorElMenu(null);
   };
 
-  // const navigate = useNavigate()
-  const handleOpenWindow = () => {
-    window.open("/video", "_blank", "width=400,height=200");
-    // navigate("/video");
-  };
+
+  ;
 
   return groupId ? (
     <div className="h-full w-full">
@@ -166,30 +172,7 @@ const Messages = ({ upcomingM, setUM, socket }) => {
               .map((group, index) => {
                 return (
                   <div key={index} className=" w-full flex justify-between">
-                    <div className="flex items-center gap-4">
-                      <Avatar
-                        className="h-10 w-10 ring-2 ring-slate-300"
-                        alt={`${group.groupName}`}
-                        src={`${group.groupDP}`}
-                      />
-                      <h2 className="text-slate-300 text-xl">
-                        {group.groupName}
-                      </h2>
-                    </div>
-                    <div className="flex">
-                      <button
-                        className="theme-sm text-white rounded-2xl p-2 h-full w-16 flex justify-center items-center theme-hover"
-                        onClick={handleOpenWindow}
-                      >
-                        <CallIcon />
-                      </button>
-                      <button
-                        className="theme-sm text-white rounded-2xl p-2 h-full w-16 flex justify-center items-center theme-hover"
-                        onClick={handleOpenWindow}
-                      >
-                        <VideoCallIcon />
-                      </button>
-                    </div>
+                    <UserBar group={group} handleOpenWindow={handleOpenWindow}  />
                   </div>
                 );
               })}
