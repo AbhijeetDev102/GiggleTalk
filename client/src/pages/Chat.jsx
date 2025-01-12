@@ -1,17 +1,30 @@
-import axios from "axios";
-import React, { useEffect, useState, useRef } from "react";
+
+import React, { useEffect, useState, useRef, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { MutatingDots } from "react-loader-spinner";
 import UserChat from "../components/UserChat";
 import Messages from "../components/Messages";
 import { useDispatch, useSelector } from "react-redux";
 import LogoutRoundedIcon from '@mui/icons-material/LogoutRounded';
-import { setGroupId, setSocketRef } from "../reduxStore/slices/socketInfo";
-import { apiUrl } from "../../services/apiJson";
- 
+import { setGroupId } from "../reduxStore/slices/socketInfo";
+import {setIncommingCall, setPeer, setRemotePeerIdList} from "../reduxStore/slices/call-slice"; 
+
+import Peer from "peerjs"
+import Video from "../components/Video";
 
 
 const Chat = () => {
+
+
+
+  const [callAccepted, setCallAccepted] = useState(false);
+  // const [incomming, setincomming] = useState(false);
+  const [myPeerId, setMyPeerId] = useState(null);
+  const [remotePeerId, setRemotePeerId] = useState([]);
+  const [peer, setpeer] = useState(null);
+  const [incommingStream, setIncommingStream] = useState(null);
+  
+
 
   
 const dispatch = useDispatch()
@@ -19,11 +32,14 @@ const dispatch = useDispatch()
   const groupIds = useSelector((state) => state.group.groupIds);
 
   const groupId = useSelector((state)=>state.socket.groupId)
+  const incommingCall = useSelector((state)=>state.call.incommingCall)
+  const callMade = useSelector((state)=>state.call.callMade)
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
-  
-
-  
+  const [status, setStatus] = useState(true);
+  const [sendId, setSendId] = useState(false);
+  const [recivedId, setRecivedId] = useState(null);
+  const [display, setDisplay] = useState("hidden")
   const [upcomingM , setUM] = useState({
     content:"",
     senderUserId:null
@@ -31,26 +47,115 @@ const dispatch = useDispatch()
 
 const socket =  useSelector((state)=>state.socket.socketRef)
 
+const sendPeerId = useCallback((id, online) => {
+
+  
+  if (Array.isArray(groupIds)) {
+    socket.emit("sendPeerId", { peerId: id, groupIds: groupIds, status: online });
+    console.log("peerid is send", id);
+  } else {
+    console.error("groupIds is not an array or is null/undefined");
+  }
+   
+  
+  
+}, [socket, groupIds]);
+
+const handleOpenWindow = () => {
+  const newWindow = window.open("/video", "_blank", "width=400,height=200");
+};
+
+useEffect(() => {
+  if(groupIds){
+  if(status==true && sendId==false){
+    sendPeerId(myPeerId, true);
+  }else if(status==false && sendId==true){
+    sendPeerId(myPeerId, false);
+    setSendId(false)
+  }
+}
+}, [myPeerId, groupIds, status, sendId]);
+
+
+
+
+useEffect(()=>{
+  if(remotePeerId){
+    dispatch(setRemotePeerIdList(remotePeerId))
+  }
+},[remotePeerId, dispatch])
+
+const setPeerId = (data) => {
+  if(data.peerId!=null && data.groupId!=null){
+    if(!remotePeerId.some(peerObj => peerObj.peerId == data.peerId)){
+      if(remotePeerId.some(peerObj => peerObj.groupId == data.groupId)){
+        remotePeerId.map((peerObj, index) => {
+          if (peerObj.groupId === data.groupId) {
+            const updatedPeerObj = { ...peerObj, peerId: data.peerId };
+            setRemotePeerId(prevRemotePeerId => [
+              ...prevRemotePeerId.slice(0, index),
+              updatedPeerObj,
+              ...prevRemotePeerId.slice(index + 1)
+            ]);
+          }
+      })
+      }else{
+        setRemotePeerId(prevRemotePeerId => [...prevRemotePeerId, { peerId:data.peerId , groupId:data.groupId}])
+       
+
+      }
+
+}
+
+  if(data.status==true){
+    setSendId(true)
+    setStatus(false)
+  }else if(data.status==false){
+    setStatus(false)
+    setSendId(false)
+  }
+}
+}
+
+useEffect(() => {
+  if(recivedId!=null){
+  setPeerId(recivedId)
+}
+}, [recivedId])
+//useeffect for socket and peerconnection to server
   useEffect(() => {
     
-    if(socket){
-      
+    const peer =  new Peer({
+      host: `${import.meta.env.VITE_PEERJS_HOST}`,
+      port: `${import.meta.env.VITE_PEER_PORT}`,
+      path: '/myapp',
+      secure: false  // set to true if your app is using https or you are hosting it on an ssl enabled server but for local development it is not required
+    });
+  
+  
+    peer.on("open", (id) => {
+      console.log(id);
+      setMyPeerId(id);
+      setpeer(peer)
+      dispatch(setPeer(peer))
+    });  
+    
 
+    if(socket){
       socket.on("connect", () => {
         console.log("Connected to server");
+        
       setLoading(false)
 
       });
-  
-      socket.on("user-joined", (data)=>{
-        
-      })
-  
-  
-      socket.on("Received-message", (data) => {
-       
+      socket.on("Received-message", (data) => {      
         setUM(data)
       });
+
+      socket.on("receivePeerId", (data)=>{
+        setRecivedId(data)
+    
+      })
   
       return () => {
         socket.off('connect')
@@ -59,16 +164,44 @@ const socket =  useSelector((state)=>state.socket.socketRef)
         
     }
     };
-  }, [socket]);
+
+    
+
+  }, [socket ]);
 
 
+  //useeffect for incommingcall listner
+useEffect(() => {
+    if (peer) {
+      peer.on("call", (call) => {
+        if (call) {
+          // setincomming(true);
+          dispatch(setIncommingCall(true))
+          handleOpenWindow()
+          setIncommingStream(call);
+        }
+      });
+    }
+  }, [peer]);
 
+
+  useEffect(() => {
+    if (incommingCall) {
+      setDisplay("block")
+    }} , [incommingCall]);
+  useEffect(() => {
+    if (callMade) {
+      setDisplay("block")
+    }} , [callMade]);
+
+  //useeffect for sending the message to server
   useEffect(() => {
     if (socket && data != null) {
       socket.emit("message", {data, groupId});
     
     }
-  }, [data]);
+
+  }, [data, socket, groupId ]);
 
 
   // useEffect(()=>{
@@ -78,7 +211,11 @@ const socket =  useSelector((state)=>state.socket.socketRef)
 
   // }, [groupId])
  
+
+
   
+
+      //function to logout and clear the localstorage and navigate to auth page
   const logout = ()=>{
     localStorage.clear()
     navigate("/auth")
@@ -86,7 +223,32 @@ const socket =  useSelector((state)=>state.socket.socketRef)
     dispatch(setGroupId(null))
   }
 
+  const [position, setPosition] = useState({ x: 100, y: 100 });
+    const [isDragging, setIsDragging] = useState(false);
+    const [offset, setOffset] = useState({ x: 0, y: 0 });
   
+    const handleMouseDown = (e) => {
+      setIsDragging(true);
+      // Set offset to the difference between the mouse position and the div's top-left corner
+      setOffset({
+        x: e.clientX - position.x,
+        y: e.clientY - position.y,
+      });
+    };
+  
+    const handleMouseMove = (e) => {
+      if (isDragging) {
+        // Update position based on mouse movement
+        setPosition({
+          x: e.clientX - offset.x,
+          y: e.clientY - offset.y,
+        });
+      }
+    };
+  
+    const handleMouseUp = () => {
+      setIsDragging(false);
+    };
 
   if (loading) {
     return (
@@ -106,18 +268,39 @@ const socket =  useSelector((state)=>state.socket.socketRef)
     );
   } else {
     return (
-      <div>
+      <div 
+      className="relative overflow-hidden"
+      onMouseMove={handleMouseMove}
+      onMouseUp={handleMouseUp} 
+      >
+              
+
+      <div
+        className={`absolute w-20 h-20 bg-gray-700 min-h-[80%] min-w-[70%] text-white flex items-center justify-center cursor-move z-50 resize ${display}` }
+        style={{
+          left: `${position.x}px`,
+          top: `${position.y}px`,
+        }}
+        onMouseDown={handleMouseDown}
+      >
+        <Video/>
+      </div>
+
+
+
         <div className="h-screen w-full theme-xl flex justify-center items-center">
           <div className="h-[98vh] w-[99vw] rounded-xl flex justify-around items-center">
             <div className="h-[98%] w-[5%] theme-md rounded-3xl flex flex-col justify-between p-3 py-7 items-center ">
-              <div></div>
+              <div><button className="h-11 w-20 bg-red-300 rounded-3xl" onClick={()=>{
+                console.log(remotePeerId)
+              }}>print</button></div>
               <div className="h-9 w-full flex justify-center items-center rounded-lg text-white theme-lg hover:bg-red-500 cursor-pointer transition-all ease-in-out " onClick={logout}><LogoutRoundedIcon/></div>
             </div>
             <div className="h-[98%] w-[28%] theme-md rounded-xl">
-              <UserChat setLoading={setLoading}/>
+              <UserChat setLoading={setLoading} />
             </div>
             <div className="h-[98%] w-[64%] py-2 theme-md rounded-xl  md:block">
-              <Messages upcomingM={upcomingM} setUM={setUM} socket={socket}/>
+              <Messages upcomingM={upcomingM} setUM={setUM} socket={socket} handleOpenWindow={handleOpenWindow}/>
             </div>
           </div>
         </div>
