@@ -3,7 +3,8 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
     socketRef:null,
-    groupId:null
+    groupId:null,
+    peer:null,
 }
 
 const socketReducer = createSlice({
@@ -15,11 +16,14 @@ const socketReducer = createSlice({
         },
         setGroupId: (state, action) => {
             state.groupId =  action.payload;
+        },
+        setPeer: (state, action) => {
+            state.peer = action.payload;
         }
     },
     
 });
 
-export const { setSocketRef , setGroupId } = socketReducer.actions;
+export const { setSocketRef , setGroupId, setPeer } = socketReducer.actions;
 
 export default socketReducer.reducer;
