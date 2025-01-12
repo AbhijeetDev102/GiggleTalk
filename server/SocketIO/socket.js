@@ -4,7 +4,8 @@ const initializeSocket = (server) => {
   const io = new Server(server, {
     cors: {
       origin: `${process.env.FRONT_END_BASEURL}`, // specify the allowed origin
-      credentials: true 
+      credentials: true ,
+      path: '/socket.io',
     }}
   );
 
@@ -30,8 +31,19 @@ const initializeSocket = (server) => {
     socket.on("message", async ({ data, groupId }) => {
       console.log("message received", data);
       if (groupId) {
+        
+        
         socket.broadcast.to(groupId).emit("Received-message", data);
       }
+    });
+
+    socket.on("sendPeerId", ({ peerId, groupIds, status }) => {
+      console.log("peerId",peerId);
+   
+        groupIds.forEach(groupId => {
+          socket.broadcast.to(groupId).emit("receivePeerId", {peerId:peerId, groupId:groupId, status:status});
+       
+      })
     });
 
     socket.on("deletedFromEveryOne", (groupId) => {

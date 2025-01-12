@@ -4,6 +4,7 @@ const cors = require("cors")
 const app = express()
 const cloudinary = require("./config/cloudinary")
 const fileUpload = require("express-fileupload");
+const { PeerServer} = require("peer")
 //cors setup for comuniction with frontend
 require("dotenv").config()
 app.use(cors({
@@ -48,10 +49,20 @@ const initializeSocket = require("./SocketIO/socket");
 const server = createServer(app)
 initializeSocket(server)
 
+const customGenerationFunction = () =>
+	(Math.random().toString(36) + "0000000000000000000").substring(2, 18);
+
+const peerServer = PeerServer({ 
+    port: 9000, path: "/myapp",
+    generateClientId: customGenerationFunction,
+});
 
 
-server.listen(process.env.PORT, ()=>{console.log('server is running at port 8000'.bgGreen.bold);
-})
+
+const PORT = process.env.PORT || 8000;
+server.listen(PORT, () => {
+    console.log(`server is running at port ${PORT}`.bgGreen.bold);
+});
 
 sequelize.sync({alter:true})
    .then(()=>{
