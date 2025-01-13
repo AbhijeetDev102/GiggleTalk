@@ -11,7 +11,7 @@ import axios from "axios";
 import Video from "./components/Video";
 import { setSocketRef } from "./reduxStore/slices/socketInfo";
 import { io } from "socket.io-client";
-import DraggableDiv from "./pages/Test";
+
 
 export const getgroupData = async(userId, dispatch, socketRef)=>{
   
@@ -95,7 +95,7 @@ function App() {
         <Route path="/profile" element={<Profile />} />
         <Route path="/chat" element={<Chat />} />
         <Route path="/video" element={<Video />} />
-        <Route path="/drag" element={<DraggableDiv />} />
+
     
       </Routes>
     </>

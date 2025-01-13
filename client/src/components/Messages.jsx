@@ -14,7 +14,7 @@ import MoreVertIcon from "@mui/icons-material/MoreVert";
 
 import UserBar from "./userBar";
 
-const Messages = ({ upcomingM, setUM, socket, handleOpenWindow }) => {
+const Messages = ({ upcomingM, setUM, socket }) => {
   const userdata = useSelector((state) => state.auth.userinfo);
   const groupData = useSelector((state) => state.group.groupinfo);
   const groupId = useSelector((state) => state.socket.groupId);
@@ -172,7 +172,7 @@ const Messages = ({ upcomingM, setUM, socket, handleOpenWindow }) => {
               .map((group, index) => {
                 return (
                   <div key={index} className=" w-full flex justify-between">
-                    <UserBar group={group} handleOpenWindow={handleOpenWindow}  />
+                    <UserBar group={group}  />
                   </div>
                 );
               })}

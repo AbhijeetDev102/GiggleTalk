@@ -7,7 +7,7 @@ import Messages from "../components/Messages";
 import { useDispatch, useSelector } from "react-redux";
 import LogoutRoundedIcon from '@mui/icons-material/LogoutRounded';
 import { setGroupId } from "../reduxStore/slices/socketInfo";
-import {setIncommingCall, setPeer, setRemotePeerIdList} from "../reduxStore/slices/call-slice"; 
+import {setCallEnd, setIncommingCall, setIncommingPeerInstance, setPeer, setRemotePeerIdList} from "../reduxStore/slices/call-slice"; 
 
 import Peer from "peerjs"
 import Video from "../components/Video";
@@ -17,12 +17,12 @@ const Chat = () => {
 
 
 
-  const [callAccepted, setCallAccepted] = useState(false);
+  
   // const [incomming, setincomming] = useState(false);
   const [myPeerId, setMyPeerId] = useState(null);
   const [remotePeerId, setRemotePeerId] = useState([]);
   const [peer, setpeer] = useState(null);
-  const [incommingStream, setIncommingStream] = useState(null);
+  
   
 
 
@@ -61,9 +61,7 @@ const sendPeerId = useCallback((id, online) => {
   
 }, [socket, groupIds]);
 
-const handleOpenWindow = () => {
-  const newWindow = window.open("/video", "_blank", "width=400,height=200");
-};
+
 
 useEffect(() => {
   if(groupIds){
@@ -125,12 +123,7 @@ useEffect(() => {
 //useeffect for socket and peerconnection to server
   useEffect(() => {
     
-    const peer =  new Peer({
-      host: `${import.meta.env.VITE_PEERJS_HOST}`,
-      port: `${import.meta.env.VITE_PEER_PORT}`,
-      path: '/myapp',
-      secure: false  // set to true if your app is using https or you are hosting it on an ssl enabled server but for local development it is not required
-    });
+    const peer =  new Peer();
   
   
     peer.on("open", (id) => {
@@ -177,8 +170,8 @@ useEffect(() => {
         if (call) {
           // setincomming(true);
           dispatch(setIncommingCall(true))
-          handleOpenWindow()
-          setIncommingStream(call);
+          // setDisplay("block")
+          dispatch(setIncommingPeerInstance(call));
         }
       });
     }
@@ -210,9 +203,27 @@ useEffect(() => {
   //   }
 
   // }, [groupId])
- 
+  const remoteConnectionInstance = useSelector((state)=>state.call.remoteConnectionInstance)
+  const callEnd = useSelector((state)=>state.call.callEnd)
+  useEffect(() => {
+    if (remoteConnectionInstance) {
+      remoteConnectionInstance.on('data', (data) => {
+        console.log("remoteconnectioninstance data" , data);
+        
+        if (data === 'call-ended') {
+          console.log('Call ended by the other peer');
+          dispatch(setCallEnd(true))
+        }
+      });
+    }
+  }, [remoteConnectionInstance]);
 
-
+  useEffect(() => {
+    if (callEnd==true) {
+      setDisplay("hidden")
+    }
+  }, [callEnd]);
+    
   
 
       //function to logout and clear the localstorage and navigate to auth page
@@ -276,7 +287,7 @@ useEffect(() => {
               
 
       <div
-        className={`absolute w-20 h-20 bg-gray-700 min-h-[80%] min-w-[70%] text-white flex items-center justify-center cursor-move z-50 resize ${display}` }
+        className={`absolute w-20 h-20 bg-gray-700 min-h-[80%] min-w-[70%] text-white rounded-3xl border border-gray-400 flex items-center justify-center cursor-move z-50 ${display}` }
         style={{
           left: `${position.x}px`,
           top: `${position.y}px`,
@@ -300,7 +311,7 @@ useEffect(() => {
               <UserChat setLoading={setLoading} />
             </div>
             <div className="h-[98%] w-[64%] py-2 theme-md rounded-xl  md:block">
-              <Messages upcomingM={upcomingM} setUM={setUM} socket={socket} handleOpenWindow={handleOpenWindow}/>
+              <Messages upcomingM={upcomingM} setUM={setUM} socket={socket} />
             </div>
           </div>
         </div>
