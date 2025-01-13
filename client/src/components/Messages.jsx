@@ -12,7 +12,7 @@ import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 
-import UserBar from "./userBar";
+import UserBar from "./UserBar";
 
 const Messages = ({ upcomingM, setUM, socket }) => {
   const userdata = useSelector((state) => state.auth.userinfo);
