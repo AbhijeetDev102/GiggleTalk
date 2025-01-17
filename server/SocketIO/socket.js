@@ -46,6 +46,11 @@ const initializeSocket = (server) => {
       })
     });
 
+
+    socket.on("callData", (data) => {
+      socket.broadcast.to(data.groupId).emit("receiveCallData", data);
+    });
+
     socket.on("deletedFromEveryOne", (groupId) => {
       socket.broadcast.to(groupId).emit("deleteMessage");
     });
