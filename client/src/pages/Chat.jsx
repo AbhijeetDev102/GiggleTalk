@@ -30,7 +30,7 @@ const Chat = () => {
 const dispatch = useDispatch()
   const data = useSelector((messageState) => messageState.message.messageValue);
   const groupIds = useSelector((state) => state.group.groupIds);
-
+  const groupinfo = useSelector((state) => state.group.groupinfo);
   const groupId = useSelector((state)=>state.socket.groupId)
   const incommingCall = useSelector((state)=>state.call.incommingCall)
   const callMade = useSelector((state)=>state.call.callMade)
@@ -45,18 +45,20 @@ const dispatch = useDispatch()
     senderUserId:null
   })
 
+  const [callData,setCallData] = useState(null)
+
 const socket =  useSelector((state)=>state.socket.socketRef)
 
 const sendPeerId = useCallback((id, online) => {
 
-  
+  if(socket){
   if (Array.isArray(groupIds)) {
     socket.emit("sendPeerId", { peerId: id, groupIds: groupIds, status: online });
     console.log("peerid is send", id);
   } else {
     console.error("groupIds is not an array or is null/undefined");
   }
-   
+}
   
   
 }, [socket, groupIds]);
@@ -64,6 +66,7 @@ const sendPeerId = useCallback((id, online) => {
 
 
 useEffect(() => {
+  
   if(groupIds){
   if(status==true && sendId==false){
     sendPeerId(myPeerId, true);
@@ -80,6 +83,7 @@ useEffect(() => {
 useEffect(()=>{
   if(remotePeerId){
     dispatch(setRemotePeerIdList(remotePeerId))
+    
   }
 },[remotePeerId, dispatch])
 
@@ -120,9 +124,11 @@ useEffect(() => {
   setPeerId(recivedId)
 }
 }, [recivedId])
+
+
 //useeffect for socket and peerconnection to server
   useEffect(() => {
-    
+   
     const peer =  new Peer();
   
   
@@ -130,6 +136,7 @@ useEffect(() => {
       console.log(id);
       setMyPeerId(id);
       setpeer(peer)
+    setLoading(false)
       dispatch(setPeer(peer))
     });  
     
@@ -138,21 +145,26 @@ useEffect(() => {
       socket.on("connect", () => {
         console.log("Connected to server");
         
-      setLoading(false)
 
       });
       socket.on("Received-message", (data) => {      
         setUM(data)
       });
 
-      socket.on("receivePeerId", (data)=>{
+      socket.on("receivePeerId", (groupId)=>{
+        const data= groupinfo.find((group)=> group.groupId ===groupId)
         setRecivedId(data)
     
+      })
+
+      socket.on("receiveCallData", (data) => {
+        setCallData(data)
       })
   
       return () => {
         socket.off('connect')
         socket.off('Recived-message')
+        socket.off("receiveCallData")
         
         
     }
@@ -160,7 +172,7 @@ useEffect(() => {
 
     
 
-  }, [socket ]);
+  }, [socket]);
 
 
   //useeffect for incommingcall listner
@@ -287,14 +299,14 @@ useEffect(() => {
               
 
       <div
-        className={`absolute w-20 h-20 bg-gray-700 min-h-[80%] min-w-[70%] text-white rounded-3xl border border-gray-400 flex items-center justify-center cursor-move z-50 ${display}` }
+        className={`absolute bg-gray-800  text-white rounded-3xl border border-gray-400 flex items-center justify-center cursor-move z-50 ${display} resize` }
         style={{
           left: `${position.x}px`,
           top: `${position.y}px`,
         }}
         onMouseDown={handleMouseDown}
       >
-        <Video/>
+        <Video callData={callData}/>
       </div>
 
 
@@ -308,7 +320,9 @@ useEffect(() => {
               <div className="h-9 w-full flex justify-center items-center rounded-lg text-white theme-lg hover:bg-red-500 cursor-pointer transition-all ease-in-out " onClick={logout}><LogoutRoundedIcon/></div>
             </div>
             <div className="h-[98%] w-[28%] theme-md rounded-xl">
-              <UserChat setLoading={setLoading} />
+              <UserChat
+               setLoading={setLoading}
+                />
             </div>
             <div className="h-[98%] w-[64%] py-2 theme-md rounded-xl  md:block">
               <Messages upcomingM={upcomingM} setUM={setUM} socket={socket} />

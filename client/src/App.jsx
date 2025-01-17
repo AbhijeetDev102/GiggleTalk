@@ -8,9 +8,10 @@ import { setUserinfo } from "./reduxStore/slices/auth-slice";
 import { apiJson, apiUrl } from "../services/apiJson";
 import { setGroupIds, setGroupinfo } from "./reduxStore/slices/group-slice";
 import axios from "axios";
-import Video from "./components/Video";
+
 import { setSocketRef } from "./reduxStore/slices/socketInfo";
 import { io } from "socket.io-client";
+import VideoPlayer from "./pages/Test";
 
 
 export const getgroupData = async(userId, dispatch, socketRef)=>{
@@ -18,6 +19,7 @@ export const getgroupData = async(userId, dispatch, socketRef)=>{
   const groupdata = await axios.post(`${apiUrl}/api/v1/getGroupinfo`, { userId: userId });
 
         if (groupdata.data && groupdata.data.data) {
+          console.log(groupdata.data.data)
           dispatch(setGroupinfo(groupdata.data.data));
         } else {
           console.error("Failed to fetch group data");
@@ -94,7 +96,8 @@ function App() {
         <Route path="/auth" element={<Auth />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/chat" element={<Chat />} />
-        <Route path="/video" element={<Video />} />
+
+        <Route path="/videoplayer" element={<VideoPlayer />} />
 
     
       </Routes>

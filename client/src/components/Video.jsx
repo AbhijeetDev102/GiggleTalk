@@ -1,8 +1,10 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-
+import CallEndIcon from '@mui/icons-material/CallEnd';
+import DuoIcon from '@mui/icons-material/Duo';
 import { setCallEnd, setCallMade, setIncommingCall } from '../reduxStore/slices/call-slice';
-const Video = () => {
+import { Avatar } from '@mui/material';
+const Video = ({callData}) => {
   const dispatch = useDispatch()
   const myVideoRef = useRef(null);
   const myVideoStream = useSelector((state)=>state.call.myVideoStream)
@@ -109,7 +111,7 @@ const setupIncommingVideo = ()=>{
   return (
     <>
       {(callMade || callAccepted) && (
-        <div className="w-full h-full flex items-center justify-center">
+        <div className="min-h-[30rem] min-w-[50rem] flex items-center justify-center">
           <div className="h-[95%] w-[97%] border-2 border-red-400 relative rounded-3xl flex items-center justify-center">
             
             <video
@@ -127,28 +129,50 @@ const setupIncommingVideo = ()=>{
         </div>
       )}
       {incommingCall && (
-        <div className="flex justify-center mt-4">
+        <div  className=' flex flex-col justify-center items-center min-h-[23rem] min-w-56'>
+
+          <div className='flex flex-col justify-center items-center gap-5'>
+          <Avatar
+                className="h-36 w-36 text-4xl ring-8 ring-slate-300 "
+                // alt={`${group.groupName}`}
+                src={`${callData.groupDP}`}
+                alt={`${callData.groupName}`}
+              />
+              <h2 className='text-3xl'>{`${callData.groupName}`}</h2>
+          </div>
+
+        <div className="flex justify-center gap-9 w-full   mt-4  bottom-8">
           <button
             onClick={() => {
               setCallAccepted(true);
               acceptCall(incommingStream);
               dispatch(setIncommingCall(false));
             }}
-            className="px-4 py-2 bg-green-500 text-white rounded-lg"
+            className="px-4 py-2 bg-green-500 text-white rounded-full hover:bg-emerald-600 transition-all"
           >
-            Accept Call
+          <DuoIcon/>
           </button>
-        </div>
-      )}
-      {(callMade || callAccepted) && (
-        <div className="flex justify-center mt-4">
           <button
             onClick={() => {
               endCall();
             }}
-            className="px-4 py-2 bg-red-500 text-white rounded-lg"
+            className="px-4 py-2 bg-red-500 text-white rounded-full hover:bg-red-600 transition-all"
           >
-            End Call
+            <CallEndIcon/>
+          </button>
+  
+        </div>
+        </div>
+      )}
+      {(callMade || callAccepted) && (
+        <div className="flex justify-center mt-4 absolute bottom-8">
+          <button
+            onClick={() => {
+              endCall();
+            }}
+            className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-all"
+          >
+            <CallEndIcon/>
           </button>
         </div>
       )}
