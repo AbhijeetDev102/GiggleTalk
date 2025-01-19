@@ -10,9 +10,9 @@ const initialState = {
     incommingCall:false,
     callMade:false,
     incommingPeerInstance:null,
-    callEnd:null
-}
-
+    callEnd:null,
+    callData:null
+};
 const callReducer = createSlice({
     name: "call",
     initialState,
@@ -43,11 +43,14 @@ const callReducer = createSlice({
         },
         setCallEnd: (state, action) => {
             state.callEnd = action.payload;
+        },
+        setCallData: (state, action) => {
+            state.callData = action.payload;
         }
     },
     
 });
 
-export const { setPeer, setMyVideoStream, setOtherVideoStream , setRemotePeerIdList,setRemoteConnectionInstance, setIncommingCall, setCallMade, setIncommingPeerInstance,setCallEnd} = callReducer.actions;
+export const { setPeer, setMyVideoStream, setOtherVideoStream , setRemotePeerIdList,setRemoteConnectionInstance, setIncommingCall, setCallMade, setIncommingPeerInstance,setCallEnd,setCallData} = callReducer.actions;
 
 export default callReducer.reducer;

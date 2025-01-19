@@ -30,7 +30,9 @@ const Chat = () => {
 const dispatch = useDispatch()
   const data = useSelector((messageState) => messageState.message.messageValue);
   const groupIds = useSelector((state) => state.group.groupIds);
+
   const groupinfo = useSelector((state) => state.group.groupinfo);
+  const [Groupinfo, setGroupInfo] = useState(null)
   const groupId = useSelector((state)=>state.socket.groupId)
   const incommingCall = useSelector((state)=>state.call.incommingCall)
   const callMade = useSelector((state)=>state.call.callMade)
@@ -45,20 +47,22 @@ const dispatch = useDispatch()
     senderUserId:null
   })
 
+  const socket =  useSelector((state)=>state.socket.socketRef)
+
+  
   const [callData,setCallData] = useState(null)
 
-const socket =  useSelector((state)=>state.socket.socketRef)
 
 const sendPeerId = useCallback((id, online) => {
 
-  if(socket){
+  // if(socket){
   if (Array.isArray(groupIds)) {
     socket.emit("sendPeerId", { peerId: id, groupIds: groupIds, status: online });
     console.log("peerid is send", id);
   } else {
     console.error("groupIds is not an array or is null/undefined");
   }
-}
+// }
   
   
 }, [socket, groupIds]);
@@ -151,15 +155,14 @@ useEffect(() => {
         setUM(data)
       });
 
-      socket.on("receivePeerId", (groupId)=>{
-        const data= groupinfo.find((group)=> group.groupId ===groupId)
+      socket.on("receivePeerId", (data)=>{
+        
+        // console.log("groupdata", Groupdata);
         setRecivedId(data)
     
       })
 
-      socket.on("receiveCallData", (data) => {
-        setCallData(data)
-      })
+      
   
       return () => {
         socket.off('connect')
@@ -173,6 +176,22 @@ useEffect(() => {
     
 
   }, [socket]);
+
+  useEffect(() => {
+    if (groupinfo && socket) {
+      
+      socket.on("receiveCallData", (data) => {
+        console.log("call data received", data);
+        const Groupdata= groupinfo?.find((group)=> group?.groupId ===data?.groupId)
+        setCallData(Groupdata)
+      })
+      return ()=>{
+        socket.off("receiveCallData")
+      }
+    }
+  }, [groupinfo , socket]);
+
+  
 
 
   //useeffect for incommingcall listner

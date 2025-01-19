@@ -17,6 +17,7 @@ const Video = ({callData}) => {
   const [incommingStream, setIncommingStream] = useState(null);
   const [callAccepted, setCallAccepted] = useState(false);
   const callEnd = useSelector((state)=>state.call.callEnd)
+  // const callData = useSelector((state)=>state.call.callData)
   useEffect(() => {
     if(incommingPeerInstance){
       setIncommingStream(incommingPeerInstance)
@@ -131,14 +132,14 @@ const setupIncommingVideo = ()=>{
       {incommingCall && (
         <div  className=' flex flex-col justify-center items-center min-h-[23rem] min-w-56'>
 
-          <div className='flex flex-col justify-center items-center gap-5'>
+          <div className='flex flex-col justify-center items-center gap-5 m-6'>
           <Avatar
                 className="h-36 w-36 text-4xl ring-8 ring-slate-300 "
-                // alt={`${group.groupName}`}
-                src={`${callData.groupDP}`}
-                alt={`${callData.groupName}`}
+                
+                src={`${callData?.groupDP}`}
+                alt={`${callData?.groupName}`}
               />
-              <h2 className='text-3xl'>{`${callData.groupName}`}</h2>
+              <h2 className='text-3xl'>{`${callData?.groupName}`}</h2>
           </div>
 
         <div className="flex justify-center gap-9 w-full   mt-4  bottom-8">

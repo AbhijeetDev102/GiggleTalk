@@ -26,7 +26,7 @@ const UserBar = ({ group }) => {
         dispatch(setMyVideoStream(stream));
 
 
-        socket.emit("callData" , groupId)
+        socket.emit("callData" , {groupId})
 
         const obj = remotePeerIdList.find(
           (remotePeerId) => remotePeerId.groupId === groupId
