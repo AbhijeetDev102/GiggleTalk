@@ -1,6 +1,6 @@
 
 import React, { useEffect, useState, useRef, useCallback } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { MutatingDots } from "react-loader-spinner";
 import UserChat from "../components/UserChat";
 import Messages from "../components/Messages";
@@ -11,6 +11,7 @@ import {setCallEnd, setIncommingCall, setIncommingPeerInstance, setPeer, setRemo
 
 import Peer from "peerjs"
 import Video from "../components/Video";
+import { gettingData } from "../App";
 
 
 const Chat = () => {
@@ -30,7 +31,7 @@ const Chat = () => {
 const dispatch = useDispatch()
   const data = useSelector((messageState) => messageState.message.messageValue);
   const groupIds = useSelector((state) => state.group.groupIds);
-
+  const location = useLocation();
   const groupinfo = useSelector((state) => state.group.groupinfo);
   const [Groupinfo, setGroupInfo] = useState(null)
   const groupId = useSelector((state)=>state.socket.groupId)
@@ -47,7 +48,9 @@ const dispatch = useDispatch()
     senderUserId:null
   })
 
+
   const socket =  useSelector((state)=>state.socket.socketRef)
+  const userinfo = useSelector((state)=> state.auth.userinfo)
 
   
   const [callData,setCallData] = useState(null)
@@ -80,7 +83,6 @@ useEffect(() => {
   }
 }
 }, [myPeerId, groupIds, status, sendId]);
-
 
 
 
@@ -140,7 +142,7 @@ useEffect(() => {
       console.log(id);
       setMyPeerId(id);
       setpeer(peer)
-    setLoading(false)
+ 
       dispatch(setPeer(peer))
     });  
     
@@ -148,7 +150,7 @@ useEffect(() => {
     if(socket){
       socket.on("connect", () => {
         console.log("Connected to server");
-        
+
 
       });
       socket.on("Received-message", (data) => {      
@@ -162,20 +164,32 @@ useEffect(() => {
     
       })
 
-      
+      socket.on("newUCChat", (data) => {
+        gettingData(dispatch, navigate, location, socket);
+
+      })
+      setLoading(false)
+        gettingData(dispatch, navigate, location, socket);
   
       return () => {
         socket.off('connect')
         socket.off('Recived-message')
         socket.off("receiveCallData")
+        socket.off("newUCChat")
         
         
     }
-    };
 
+    };
     
 
   }, [socket]);
+
+  useEffect(() => {
+    if(socket && userinfo!=null){
+    socket.emit("join-group", userinfo.Email);
+    }
+  },[socket, userinfo])
 
   useEffect(() => {
     if (groupinfo && socket) {
@@ -292,9 +306,9 @@ useEffect(() => {
       setIsDragging(false);
     };
 
-  if (loading) {
     return (
-      <div className="flex justify-center items-center h-screen w-full">
+      <>
+      <div className={`flex justify-center items-center h-screen w-full ${loading? "block" : "hidden"}`} >
         <MutatingDots
           visible={true}
           height="100"
@@ -307,11 +321,11 @@ useEffect(() => {
           wrapperClass=""
         />
       </div>
-    );
-  } else {
-    return (
+
+
+
       <div 
-      className="relative overflow-hidden"
+      className={`relative overflow-hidden ${loading? "hidden" : "block"}`}
       onMouseMove={handleMouseMove}
       onMouseUp={handleMouseUp} 
       >
@@ -340,7 +354,8 @@ useEffect(() => {
             </div>
             <div className="h-[98%] w-[28%] theme-md rounded-xl">
               <UserChat
-               setLoading={setLoading}
+              
+          
                 />
             </div>
             <div className="h-[98%] w-[64%] py-2 theme-md rounded-xl  md:block">
@@ -349,8 +364,9 @@ useEffect(() => {
           </div>
         </div>
       </div>
+      </>
     );
   }
-};
+
 
 export default Chat;

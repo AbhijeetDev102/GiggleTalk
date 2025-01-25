@@ -40,26 +40,25 @@ const StyledBadge = styled(Badge)(({ theme }) => ({
   },
 }));
 
-const UserChat = ({setLoading}) => {
+const UserChat = () => {
   const navigate = useNavigate()
   const dispatch = useDispatch();
   const userdata = useSelector((state) => state.auth.userinfo);
   const [Email, setEmail] = useState("")
 
   const [groupdata ,setGroupData] = useState([])
-  
   const retriveGroupData = useSelector((state) => state.group.groupinfo);
+  
+  
+  
+
   useEffect(()=>{
+    // console.log("retrive data ",retriveGroupData);
     if(retriveGroupData){
       setGroupData(retriveGroupData)
-      
-      
-      setLoading(false)
 
-      
-      
     }
-  }, [retriveGroupData, setLoading])
+  }, [retriveGroupData])
   
 
   
@@ -77,6 +76,7 @@ const handleSubmit = async()=>{
   } )
 
   // dispatch(setGroupinfo(res.data.data));
+  socket.emit("newChat",Email);
   getgroupData(userdata.userId, dispatch , socket)
   
 }
@@ -115,6 +115,7 @@ const handleSubmit = async()=>{
       <div className="flex flex-col items-center overflow-auto h-full ">
       {groupdata && 
         groupdata.map((group)=>{
+
           return (
           <div key={group.groupId} className="w-11/12 cursor-pointer theme-sm rounded-xl mt-2 p-3 flex items-center theme-hover transition-all ease-in-out duration-200 "
           onClick={()=>{openGroup(group.groupId)}}

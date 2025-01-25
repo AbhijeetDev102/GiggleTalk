@@ -136,10 +136,13 @@ const Messages = ({ upcomingM, setUM, socket }) => {
   }, [groupId, refresh]);
 
   useEffect(() => {
-    socket.on("deleteMessage", () => {
-      setRefresh(!refresh);
-    });
-  });
+    if(socket){
+
+      socket.on("deleteMessage", () => {
+        setRefresh(!refresh);
+      });
+    }
+  },[socket]);
 
 
 
