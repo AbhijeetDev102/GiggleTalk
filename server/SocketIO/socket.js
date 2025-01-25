@@ -28,6 +28,10 @@ const initializeSocket = (server) => {
       console.log(`User ${socket.id} joined group ${groupId}`);
     });
 
+    socket.on("newChat", (Email) => {
+      socket.to(Email).emit("newUCChat", "New Chat Created");
+    });
+
     socket.on("message", async ({ data, groupId }) => {
       console.log("message received", data);
       if (groupId) {
