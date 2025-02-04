@@ -47,7 +47,8 @@ const dispatch = useDispatch()
     content:"",
     senderUserId:null
   })
-
+    const callEnd = useSelector((state)=>state.call.callEnd)
+  
 
   const socket =  useSelector((state)=>state.socket.socketRef)
   const userinfo = useSelector((state)=> state.auth.userinfo)
@@ -131,6 +132,10 @@ useEffect(() => {
 }
 }, [recivedId])
 
+const wait =async ()=>{
+  await gettingData(dispatch, navigate, location, socket);
+  setLoading(false)
+}
 
 //useeffect for socket and peerconnection to server
   useEffect(() => {
@@ -168,8 +173,8 @@ useEffect(() => {
         gettingData(dispatch, navigate, location, socket);
 
       })
-      setLoading(false)
-        gettingData(dispatch, navigate, location, socket);
+
+      wait()
   
       return () => {
         socket.off('connect')
@@ -217,6 +222,9 @@ useEffect(() => {
           dispatch(setIncommingCall(true))
           // setDisplay("block")
           dispatch(setIncommingPeerInstance(call));
+          call.on("close",()=>{
+            dispatch(setCallEnd(true))
+          })
         }
       });
     }
@@ -242,26 +250,7 @@ useEffect(() => {
   }, [data, socket, groupId ]);
 
 
-  // useEffect(()=>{
-  //   if(groupId!=null){
-  //     socket.emit("join-group", groupId)
-  //   }
 
-  // }, [groupId])
-  const remoteConnectionInstance = useSelector((state)=>state.call.remoteConnectionInstance)
-  const callEnd = useSelector((state)=>state.call.callEnd)
-  useEffect(() => {
-    if (remoteConnectionInstance) {
-      remoteConnectionInstance.on('data', (data) => {
-        console.log("remoteconnectioninstance data" , data);
-        
-        if (data === 'call-ended') {
-          console.log('Call ended by the other peer');
-          dispatch(setCallEnd(true))
-        }
-      });
-    }
-  }, [remoteConnectionInstance]);
 
   useEffect(() => {
     if (callEnd==true) {

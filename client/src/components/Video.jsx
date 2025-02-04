@@ -11,7 +11,7 @@ const Video = ({callData}) => {
   const otherVideoRef = useRef(null);
   const otherVideoStream = useSelector((state)=>state.call.otherVideoStream)
   const incommingPeerInstance = useSelector((state)=>state.call.incommingPeerInstance)
-  const remoteConnectionInstance = useSelector((state)=>state.call.remoteConnectionInstance)
+
   const incommingCall = useSelector((state)=>state.call.incommingCall)
   const callMade = useSelector((state)=>state.call.callMade)
   const [incommingStream, setIncommingStream] = useState(null);
@@ -24,6 +24,15 @@ const Video = ({callData}) => {
     }
   }, [incommingPeerInstance])
 
+  useEffect(()=>{
+    if(incommingPeerInstance){
+      incommingPeerInstance.on("close",()=>{
+        dispatch(setCallEnd(true))
+        console.log("call ended by other user")
+
+      })
+    }
+  },[incommingPeerInstance])
 
   useEffect(() => {
     console.log("callmade",callMade)
@@ -96,11 +105,7 @@ const setupIncommingVideo = ()=>{
          otherVideoRef.current.srcObject = null;
        }
       
-       
-      if (remoteConnectionInstance) {
-        remoteConnectionInstance.send('call-ended');
-        dispatch(setCallEnd(true))
-      }
+      
      } 
 
      useEffect(() => {
@@ -112,15 +117,15 @@ const setupIncommingVideo = ()=>{
   return (
     <>
       {(callMade || callAccepted) && (
-        <div className="min-h-[30rem] min-w-[50rem] flex items-center justify-center">
-          <div className="h-[95%] w-[97%] border-2 border-red-400 relative rounded-3xl flex items-center justify-center">
+        <div className="h-[30rem] w-[50rem] flex items-center justify-center">
+          <div className="h-full w-full relative rounded-3xl flex items-center justify-center ring-2 ring-slate-300">
             
             <video
               ref={otherVideoRef}
               className="h-full w-full object-cover rounded-3xl"
             ></video>
           </div>
-          <div className="absolute z-10 bottom-6 right-6 h-[20%] w-[20%] border-2 border-red-400 rounded-3xl overflow-hidden flex items-center justify-center">
+          <div className="absolute z-10 bottom-6 right-6 h-[20%] w-[20%] ring-4 ring-slate-500 rounded-3xl overflow-hidden flex items-center justify-center">
             <video
               ref={myVideoRef}
               muted

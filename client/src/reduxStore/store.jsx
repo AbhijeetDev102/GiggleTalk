@@ -18,11 +18,11 @@ export const store = configureStore({
         getDefaultMiddleware({
           serializableCheck: {
             // Ignore these action types
-            ignoredActions: ['socket/setSocketRef', 'call/setPeer','call/setMyVideoStream','call/setOtherVideoStream', 'call/setIncommingPeerInstance', 'call/setRemoteConnectionInstance'],
+            ignoredActions: ['socket/setSocketRef', 'call/setPeer','call/setMyVideoStream','call/setOtherVideoStream', 'call/setIncommingPeerInstance'],
             // Ignore these field paths in all actions
             ignoredActionPaths: ['payload'],
             // Ignore these paths in the state
-            ignoredPaths: ['socket.socketRef', 'call.peer', 'call.myVideoStream','call.otherVideoStream', 'call.incommingPeerInstance', 'call.remoteConnectionInstance'],
+            ignoredPaths: ['socket.socketRef', 'call.peer', 'call.myVideoStream','call.otherVideoStream', 'call.incommingPeerInstance', ],
           },
         }).concat(thunk)
 })

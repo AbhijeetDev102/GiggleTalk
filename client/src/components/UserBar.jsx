@@ -6,7 +6,6 @@ import {
   setCallMade,
   setMyVideoStream,
   setOtherVideoStream,
-  setRemoteConnectionInstance,
 } from "../reduxStore/slices/call-slice";
 import { useDispatch, useSelector } from "react-redux";
 
