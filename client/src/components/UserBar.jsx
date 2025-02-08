@@ -58,12 +58,12 @@ const UserBar = ({ group }) => {
         <h2 className="text-slate-300 text-xl">{group.groupName}</h2>
       </div>
       <div className="flex">
-        <button
+        {/* <button
           className="theme-sm text-white rounded-2xl p-2 h-full w-16 flex justify-center items-center theme-hover"
           onClick={() => call(remotePeerIdList)}
         >
           <CallIcon />
-        </button>
+        </button> */}
         <button
           className="theme-sm text-white rounded-2xl p-2 h-full w-16 flex justify-center items-center theme-hover"
           onClick={() => call(remotePeerIdList)}
