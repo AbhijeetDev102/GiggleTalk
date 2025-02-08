@@ -63,14 +63,14 @@ const Signup = ({ setComponent, passShow, setpassShow }) => {
                 value={values.Firstname}
                 onChange={handleChange}
                 onBlur={handleBlur}
-                className="border border-green-300 rounded-xl w-[95%] p-2 outline-none"
+                className="   text-slate-100 rounded-md bg-slate-800 w-[95%] p-2 outline-none"
               />
               {errors.Firstname && touched.Firstname ? (
                 <p className="text-red-500">{errors.Firstname}</p>
               ) : null}
             </div>
   
-            <div className="p-2">
+            <div className="p-2 ">
               <input
                 name="Lastname"
                 type="text"
@@ -78,7 +78,7 @@ const Signup = ({ setComponent, passShow, setpassShow }) => {
                 value={values.Lastname}
                 onChange={handleChange}
                 onBlur={handleBlur}
-                className="border border-green-300 rounded-xl w-[95%]  p-2 outline-none "
+                className="  text-slate-100 rounded-md w-[95%] bg-slate-800 p-2 outline-none "
               />
   
               {errors.Lastname && touched.Lastname ? (
@@ -95,7 +95,7 @@ const Signup = ({ setComponent, passShow, setpassShow }) => {
               value={values.Email}
               onChange={handleChange}
               onBlur={handleBlur}
-              className="border border-green-300 rounded-xl  p-2 outline-none w-[95%]"
+              className="  rounded-md  text-slate-100 bg-slate-800 p-2 outline-none w-[95%]"
             />
   
             {errors.Email && touched.Email ? (
@@ -110,7 +110,7 @@ const Signup = ({ setComponent, passShow, setpassShow }) => {
               value={values.PhoneNumber}
               onChange={handleChange}
               onBlur={handleBlur}
-              className="border border-green-300 rounded-xl  p-2 outline-none w-[95%]"
+              className="  rounded-md  text-slate-100 p-2 bg-slate-800 outline-none w-[95%]"
             />
   
             {errors.PhoneNumber && touched.PhoneNumber ? (
@@ -119,7 +119,7 @@ const Signup = ({ setComponent, passShow, setpassShow }) => {
           </div>
   
           <div className="w-full p-2">
-            <div className="flex items-center justify-between border border-green-300 rounded-xl  p-2  w-[95%]">
+            <div className="flex items-center justify-between bg-slate-800   rounded-md  p-2  w-[95%]">
               <input
                 name="Password"
                 type={passShow ? "text" : "password"}
@@ -127,7 +127,7 @@ const Signup = ({ setComponent, passShow, setpassShow }) => {
                 value={values.Password}
                 onChange={handleChange}
                 onBlur={handleBlur}
-                className="outline-none mr-4 w-[90%]"
+                className="outline-none bg-slate-800  text-slate-100 mr-4 w-[90%]"
               />
               {passShow ? (
                 <box-icon
@@ -156,15 +156,16 @@ const Signup = ({ setComponent, passShow, setpassShow }) => {
   
           <div className="w-full p-2">
   
-            <div className="flex items-center  border border-green-300 rounded-xl  p-2  w-[95%]">
+            <div className="flex items-center justify-between text-slate-100 bg-slate-800    rounded-md  p-2  w-[95%]">
               <input
+            
                 name="ConfirmPassword"
                 type={passShow ? "text" : "password"}
                 placeholder="Confirm password"
                 value={values.ConfirmPassword}
                 onChange={handleChange}
                 onBlur={handleBlur}
-                className="outline-none mr-4 w-[90%]"
+                className="outline-none  text-slate-100 bg-slate-800 mr-4 w-[90%]"
               />
               {passShow ? (
                 <box-icon
@@ -189,7 +190,7 @@ const Signup = ({ setComponent, passShow, setpassShow }) => {
                 (<p className="text-red-500">{errors.ConfirmPassword}</p>) : null
           }
           </div>
-          <button type="submit" className="bg-green-400 rounded-xl m-2 p-3 w-4/5">
+          <button type="submit" className="bg-green-400 rounded-md m-2 p-3 w-4/5">
             Signup
           </button>
         </form>

@@ -41,7 +41,7 @@ const Login = ({ setComponent, passShow, setpassShow }) => {
       },
     });
   return (
-    <div className="flex-col items-center justify-center  lg:mt-10 ">
+    <div className="flex-col items-center justify-center   lg:mt-10 ">
       <form
         action=""
         className="flex flex-col items-center"
@@ -55,7 +55,7 @@ const Login = ({ setComponent, passShow, setpassShow }) => {
             value={values.Email}
             onBlur={handleBlur}
             onChange={handleChange}
-            className="border border-green-300 rounded-xl  p-2 outline-none w-[95%]"
+            className=" bg-slate-800 rounded-md  p-2 outline-none w-[95%]"
           />
           {errors.Email && touched.Email ? (
             <p className="text-red-500 font-semibold">{errors.Email}</p>
@@ -63,7 +63,7 @@ const Login = ({ setComponent, passShow, setpassShow }) => {
         </div>
 
         <div className="p-2 w-full">
-          <div className="flex items-center justify-center border border-green-300 rounded-xl  p-2  w-[95%]">
+          <div className="flex items-center justify-center bg-slate-800  rounded-md  p-2  w-[95%]">
             <input
               name="Password"
               type={passShow ? "text" : "password"}
@@ -71,7 +71,7 @@ const Login = ({ setComponent, passShow, setpassShow }) => {
               value={values.Password}
               onBlur={handleBlur}
               onChange={handleChange}
-              className="outline-none mr-2 w-[90%]"
+              className="outline-none bg-slate-800 mr-2 w-[90%]"
             />
 
             {passShow ? (
@@ -97,7 +97,7 @@ const Login = ({ setComponent, passShow, setpassShow }) => {
             <p className="text-red-500 font-semibold">{errors.Password}</p>
           ) : null}
         </div>
-        <button type="submit" className="bg-green-400 rounded-xl m-2 p-3 w-4/5">
+        <button type="submit" className="bg-green-400 rounded-md m-2 p-3 w-4/5">
           Login
         </button>
       </form>

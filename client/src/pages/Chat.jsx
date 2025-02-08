@@ -5,8 +5,8 @@ import { MutatingDots } from "react-loader-spinner";
 import UserChat from "../components/UserChat";
 import Messages from "../components/Messages";
 import { useDispatch, useSelector } from "react-redux";
-import LogoutRoundedIcon from '@mui/icons-material/LogoutRounded';
-import { setGroupId } from "../reduxStore/slices/socketInfo";
+
+
 import {setCallEnd, setIncommingCall, setIncommingPeerInstance, setPeer, setRemotePeerIdList} from "../reduxStore/slices/call-slice"; 
 
 import Peer from "peerjs"
@@ -261,12 +261,7 @@ useEffect(() => {
   
 
       //function to logout and clear the localstorage and navigate to auth page
-  const logout = ()=>{
-    localStorage.clear()
-    navigate("/auth")
-    socket.emit('logout', groupIds)
-    dispatch(setGroupId(null))
-  }
+
 
   const [position, setPosition] = useState({ x: 100, y: 100 });
     const [isDragging, setIsDragging] = useState(false);
@@ -335,17 +330,13 @@ useEffect(() => {
 
         <div className="h-screen w-full theme-xl flex justify-center items-center">
           <div className="h-[98vh] w-[99vw] rounded-xl flex justify-around items-center">
-            <div className="h-[98%] w-[5%] theme-md rounded-3xl flex flex-col justify-between p-3 py-7 items-center ">
-              <div><button className="h-11 w-20 bg-red-300 rounded-3xl" onClick={()=>{
-                console.log(remotePeerId)
-              }}>print</button></div>
-              <div className="h-9 w-full flex justify-center items-center rounded-lg text-white theme-lg hover:bg-red-500 cursor-pointer transition-all ease-in-out " onClick={logout}><LogoutRoundedIcon/></div>
-            </div>
-            <div className="h-[98%] w-[28%] theme-md rounded-xl">
+            
+            <div className="h-[98%] w-[33%] theme-md rounded-xl">
               <UserChat
               
           
                 />
+                
             </div>
             <div className="h-[98%] w-[64%] py-2 theme-md rounded-xl  md:block">
               <Messages upcomingM={upcomingM} setUM={setUM} socket={socket} />

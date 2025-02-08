@@ -13,8 +13,8 @@ const Auth = () => {
 
   return (
     <>
-      <div className="h-[100vh] w-[100%] flex  items-center justify-center ">
-        <div className=" min-h-[80%] lg:w-[60%] border shadow-md shadow-slate-300 p-12 rounded-3xl flex flex-col justify-center items-center transition duration-500 ease-in-out  relative text-slate-600 font-semibold">
+      <div className="h-[100vh] w-[100%] flex  items-center justify-center bg-slate-900 ">
+        <div className=" min-h-[80%] lg:w-[60%] bg-slate-950 p-12 rounded-3xl flex flex-col justify-center items-center transition duration-500 ease-in-out  relative text-slate-100 font-semibold">
           <div className="absolute top-4 lg:top-6 ">
             <div className="flex justify-between items-center my-4 ">
               <h1 className="text-4xl font-bold  mx-4">
@@ -29,13 +29,13 @@ const Auth = () => {
             </div>
             <div className=" relative  flex">
               <div
-                className={`rounded-lg py-4 px-9 m-1 h-[85%] w-[42%] bg-green-300 absolute -z-10 transition-transform duration-500 ease-in-out ${
+                className={`rounded-lg py-4 px-9 m-1 h-[85%] w-[42%] bg-green-400 absolute -z-5 transition-transform duration-500 ease-in-out ${
                   component == "Login" ? "translate-x-0" : "translate-x-full"
                 }  `}
               ></div>
 
               <button
-                className="rounded-lg py-4 px-8 "
+                className="rounded-lg py-4 px-8 z-20"
                 onClick={() => {
                   setComponent("Login");
                 }}
@@ -43,7 +43,7 @@ const Auth = () => {
                 Login
               </button>
               <button
-                className="rounded-lg py-4 px-8"
+                className="rounded-lg py-4 px-8 z-20"
                 onClick={() => {
                   setComponent("Signup");
                 }}

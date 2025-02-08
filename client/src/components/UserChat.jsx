@@ -6,11 +6,11 @@ import AddIcon from "@mui/icons-material/Add";
 import { useDispatch, useSelector } from "react-redux";
 import axios from "axios";
 import { apiUrl } from "../../services/apiJson";
-import {setGroupinfo } from "../reduxStore/slices/group-slice";
+
 import { getgroupData } from "../App";
 import { setGroupId } from "../reduxStore/slices/socketInfo";
 import { useNavigate } from "react-router-dom";
-
+import LogoutRoundedIcon from '@mui/icons-material/LogoutRounded';
 const StyledBadge = styled(Badge)(({ theme }) => ({
   "& .MuiBadge-badge": {
     backgroundColor: "#44b700",
@@ -92,7 +92,12 @@ const handleSubmit = async()=>{
     
   }
 
-
+  const logout = ()=>{
+    localStorage.clear()
+    navigate("/auth")
+    socket.emit('logout', groupIds)
+    dispatch(setGroupId(null))
+  }
   return (
     <div className="flex flex-col h-full ">
       <div className="py-10 px-8 w-full h-9 text-slate-200 flex justify-between items-center">
@@ -107,12 +112,13 @@ const handleSubmit = async()=>{
           type="text"
           className="h-8 w-11/12 theme-sm border-b-2 p-3 border-slate-200 outline-none "
         />
-        <button onClick={()=>{navigate("/video")}}>video</button>
+       
       </div>
 
 
 
-      <div className="flex flex-col items-center overflow-auto h-full ">
+      <div className="flex flex-col justify-between items-center overflow-auto h-full ">
+      <div className="w-full flex flex-col justify-center items-center">
       {groupdata && 
         groupdata.map((group)=>{
 
@@ -135,7 +141,8 @@ const handleSubmit = async()=>{
           </div>)
         })
       }
-      
+      </div>
+      <div className="h-9 w-full flex justify-center items-center rounded-lg text-white theme-lg hover:bg-red-500 cursor-pointer transition-all ease-in-out " onClick={logout}><LogoutRoundedIcon/></div>
       </div>
 
       <Modal open={open} onClose={handleClose}>
