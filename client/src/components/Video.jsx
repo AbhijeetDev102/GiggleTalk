@@ -96,6 +96,7 @@ const setupIncommingVideo = ()=>{
      const endCall = () => {
        setCallAccepted(false)
        dispatch(setCallMade(false))
+       dispatch(setCallEnd(true))
        if (myVideoRef.current && myVideoRef.current.srcObject) {
          myVideoRef.current.srcObject.getTracks().forEach(track => track.stop());
          myVideoRef.current.srcObject = null;
